@@ -3,10 +3,14 @@ function userDisplayName(user) {
     return user && user.profile && user.profile.name;
 }
 
+var activeTableId = function() {
+  return Session.get("selected_table");
+}
+
 Template.ordersAll.helpers({
   orders: function() {
     /* name, price, qty, userId[] */
-    var orders = Orders.find( {}, {sort: {name: 1}} ).fetch();
+    var orders = Orders.find( {tableId: activeTableId()}, {sort: {name: 1}} ).fetch();
     var groups = _.groupBy( orders, function(order) {
         return order.name;
     });
@@ -22,7 +26,6 @@ Template.ordersAll.helpers({
         if ( total._id != order._id) {
           total.qty += order.qty;
         }
-        console.log( order.name + ", userid:" + order.userId);
 
         var user = Meteor.users.findOne({_id: order.userId});
         if ( user ) {
@@ -35,13 +38,13 @@ Template.ordersAll.helpers({
     return ordersSum;
   },
   ordersAll: function() {
-    return Orders.find( {}, {sort: {name: 1}} );
+    return Orders.find( {tableId: activeTableId()}, {sort: {name: 1}} );
   },
 });
 
 Template.ordersMine.helpers({
   orders: function() {
-    return Orders.find( {userId: Meteor.userId()}, {sort: {name: 1}} );
+    return Orders.find( {userId: Meteor.userId(), tableId: activeTableId()}, {sort: {name: 1}} );
   }
 });
 
@@ -71,7 +74,6 @@ Template.userProfile.events({
     e.preventDefault();
     var displayName = $(e.target).find('[id=displayName]').val();
     if ( displayName && displayName.length > 0) {
-        console.log("new user name:" + displayName);
         Meteor.users.update({_id:Meteor.user()._id}, {$set:{"profile.name": displayName}})
     }
   },
@@ -83,15 +85,12 @@ Template.main.greeting = function () {
 
 Template.orderItemMine.events({
   'click .remove-my-order': function(e) {
-      console.log("remove my order:" + this._id + ", name:" + this.name);
       Orders.remove({_id: this._id});
   },
 });
 Template.main.events({
   'click .label': function (e) {
-    // template data, if any, is available in 'this'
-    if (typeof console !== 'undefined')
-      console.log("clicked label:" + e.target.innerHTML);
+    /* TODO: click the label -> prepare to enter as the new menu to add */
   },
 
 });
@@ -109,20 +108,22 @@ Template.addMenuRow.events({
       */
 
       var neworder = $(e.target).find('[id=neworder]').val();
-      if ( neworder && neworder.length > 0) {
+      var tableId = activeTableId();
+      if ( tableId && neworder && neworder.length > 0) {
 
         var order = {
           name: neworder,
           qty: 1,
           price: 0,
-          userId: Meteor.userId()
+          userId: Meteor.userId(),
+          tableId: tableId
         }
 
-        console.log("add:" + JSON.stringify(order));
         $(e.target).find('[id=neworder]').select();
-    //post._id = Posts.insert(post);
-    Orders.insert(order);
-  }
+        Orders.insert(order);
+      } else {
+        console.log( 'Table not specified');
+      }
 
 }
 });

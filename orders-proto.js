@@ -1,5 +1,11 @@
 Orders = new Meteor.Collection("orders");
+Tables = new Meteor.Collection("tables");
 
+/* Tables
+ * - name
+ * - created
+ * - creatorId
+ */
 
 if (Meteor.isClient) {
 
