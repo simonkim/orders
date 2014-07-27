@@ -1,0 +1,22 @@
+<template name="places">
+	<h1> Places: under development </h1>
+
+	<div class="list-group">
+  	{{#each places}}
+  		{{> placeRow}}
+  	{{/each}}
+	</div>
+
+</template>
+
+<template name="placeRow">
+  <a href="{{pathFor 'placePage'}}" class="list-group-item "> {{name}} </a>
+</template>
+
+<template name="placePage">
+	{{> loginButtons}}
+	{{> userProfile }}
+
+	Place: {{name}}
+	{{> tables}}
+</template>

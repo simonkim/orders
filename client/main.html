@@ -1,0 +1,29 @@
+<template name="main">
+  {{> loginButtons}}
+  {{>userProfile }}
+
+  {{> places}}
+
+  {{> introduction }}
+</template>
+
+<template name="introduction">
+  <H2> 아직 테스트중입니다. </H2>
+  주문하러 오셨어요? Place를 아무곳이나 선택하고 Table을 만들어보세요. Table을 선택하고 주문을 선택하면 같은 Table에 다른사람이 추가하는 내용도 모두 함께 나타납니다.
+</template>
+
+<template name="userProfile">
+  <div class="row">
+  <form class="form-inline" role="form">
+    <div class="form-group pull-right">
+      <label for="displayName">Name</label>
+      <input type="text" class="form-inline" id="displayName" placeholder="Your name" value="{{displayName}}">
+      <button type="submit" class="form-inline btn btn-sm btn-default">Change</button>
+    </div>
+  </form>
+  </div>
+</template>
+
+<template name="loading">
+  {{>spinner}}
+</template>

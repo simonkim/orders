@@ -1,6 +1,7 @@
 Orders = new Meteor.Collection("orders");
 Tables = new Meteor.Collection("tables");
-
+Places = new Meteor.Collection("places");
+Guests = new Meteor.Collection("guests");
 /* Tables
  * - name
  * - created
@@ -14,6 +15,24 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
 	Meteor.startup(function () {
     // code to run on server at startup
+    
+    if (Places.find().count() === 0) {
+        var placesData = [
+        {
+          name: "Cafe 3.5"
+      },
+      {
+          name: "Test - Friday Bistro"
+      },
+      {
+          name: "Test - Beer Factory"
+      },
+      ];
+
+      for( var i = 0; i < placesData.length; i++) {
+       Places.insert(placesData[i]);
+   }
+}
 });
 }
 
