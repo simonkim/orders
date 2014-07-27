@@ -109,7 +109,7 @@ Template.addMenuRow.events({
           tableId: tableId
         }
 
-        $(e.target).find('[id=neworder]').select();
+        $(e.target).find('[id=neworder]').val('');
         Orders.insert(order);
       } else {
         console.log( 'Table not specified');
