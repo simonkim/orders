@@ -1,5 +1,5 @@
 <template name="tables">
-	<H2> Tables </H2>
+	<H4> Tables </H4>
 	{{> tableMenu}}
 	{{> newTable}}
 </template>
@@ -32,12 +32,16 @@
 </template>
 
 <template name="tableMenuRow">
-  <a href="{{pathFor 'tablePage'}}" class="list-group-item "> {{name}} - {{tableOwnerName}} </a>
+  <a href="{{pathFor 'tablePage'}}" class="list-group-item list-group-item-success "> 
+      <span class="glyphicon glyphicon-shopping-cart"> </span> {{name}} - {{tableOwnerName}} 
+  </a>
 </template>
 
 <template name="tablePage">
-	{{> loginButtons}}
-	{{> userProfile }}
-	<h2> <a href="{{pathFor 'placePage' _id=this.placeId}}">{{placeName}}</a> - {{name}} </h2>
+    <ol class="breadcrumb">
+      <li><a href="{{pathFor 'main'}}">Home</a></li>
+      <li><a href="{{pathFor 'placePage' _id=this.placeId}}">{{placeName}}</a></li>
+      <li class="active">{{name}}</li>
+    </ol>    	
 	{{> orders}}
 </template>

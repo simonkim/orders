@@ -1,11 +1,22 @@
 <template name="orders">
     <div id="orders" class="row-fluid">
-      <h3> My Order </h3>
+
+      <h4> Orders for All </h4>
+      {{> ordersAll}}
+      
+      <h4> My Orders </h4>
       {{> ordersMine}}
       {{> addMenuRow }}
-
-      <h3> Orders for All </h3>
-      {{> ordersAll}}
+      
+      
+      <h4> Table </h4>
+      
+        <button class="btn btn-success form-control remove-table">
+        <span class="glyphicon glyphicon-ok"> </span>
+            
+          Finish and Save
+        </button>
+      
       {{> removeOrderTableButton}}
     </div>
 </template>
@@ -27,16 +38,20 @@
 </template>
 
 <template name="orderItem">
-      <li class="list-group-item order-item">
+      <li class="list-group-item list-group-item-success order-item">
+        <span class="glyphicon glyphicon-glass"> </span>
         <a href="#" class="menu-name">{{name}}</a>
 
-        <span class="glyphicon glyphicon-user"></span> 
+        <span class="glyphicon glyphicon-user"> </span>
+         
         {{#each users}}
-        <span class="label label-default"> {{userDisplayName this}} </span>
+        {{userDisplayName this}} 
         {{/each}}
+        
         {{#each guests}}
-        <span class="label label-default"> {{this.name}} </span>
+        {{this.name}}
         {{/each}}
+        
         <span class="glyphicon glyphicon-tag"> </span>
         {{price}}
         <span class="badge pull-right"> {{qty}} </span>
@@ -44,22 +59,21 @@
  </template>
 
  <template name="orderItemMine">
-      <li class="list-group-item order-item">
+      <li class="list-group-item list-group-item-warning order-item">
+        <span class="glyphicon glyphicon-glass"> </span>
         <a href="#" class="menu-name">{{name}}</a>
 
         <span class="glyphicon glyphicon-tag"> </span> {{price}}
-        <button class="btn btn-danger btn-sm remove-my-order">
+        <button class="btn btn-danger btn-sm remove-my-order pull-right">
            <span class="glyphicon glyphicon-remove"> </span>
         </button>
-        <span class="badge pull-right"> {{qty}} </span>
       </li>
  </template>
 
  <template name="addMenuRow">
   <form role="form" id="add-menu">
     <div class="form-group">
-      <label for="neworder">Enter order</label>
-      <input type="text" class="form-control" id="neworder" placeholder="Mene to add">
+      <input type="text" class="form-control" id="neworder" placeholder="Enter menu">
     </div>
       <input type="hidden" id="tableId" value="{{_id}}">
     <button type="submit" class="form-control btn btn-success">Add</button>
@@ -68,8 +82,10 @@
 
 <template name="removeOrderTableButton">
   {{#if canRemoveTableId _id}}
+  <h4> </h4>
     <button class="btn btn-danger form-control remove-table">
-      Delete Orders and Table: {{name}}
+        <span class="glyphicon glyphicon-remove"> </span>
+      Remove Table and Orders
     </button>
   {{/if}} 
 </template>

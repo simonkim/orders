@@ -1,22 +1,24 @@
 <template name="places">
-	<h1> Places: under development </h1>
+	<h4> Nearby </h4>
 
 	<div class="list-group">
   	{{#each places}}
   		{{> placeRow}}
   	{{/each}}
 	</div>
-
 </template>
 
 <template name="placeRow">
-  <a href="{{pathFor 'placePage'}}" class="list-group-item "> {{name}} </a>
+  <a href="{{pathFor 'placePage'}}" class="list-group-item list-group-item-success">
+      <span class="glyphicon glyphicon-map-marker"> </span> {{name}}
+      <span class="label pull-right label-default">{{distance}}10m</span> 
+  </a>
 </template>
 
 <template name="placePage">
-	{{> loginButtons}}
-	{{> userProfile }}
-
-	Place: {{name}}
+    <ol class="breadcrumb">
+      <li><a href="{{pathFor 'main'}}">Home</a></li>
+      <li class="active">{{name}}</li>
+    </ol>	
 	{{> tables}}
 </template>

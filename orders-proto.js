@@ -2,12 +2,22 @@ Orders = new Meteor.Collection("orders");
 Tables = new Meteor.Collection("tables");
 Places = new Meteor.Collection("places");
 Guests = new Meteor.Collection("guests");
+Comments = new Meteor.Collection("comments");
+
 /* Tables
  * - name
  * - created
  * - creatorId
  */
 
+/* Comments
+ * - text
+ * - userId
+ * - guestId
+ * - createdDate
+ * - objectType: place, table, menu, page
+ * - objectKey: id (objectType= place, table, or menu), 'home', 'about', '<any unique string>' (objectType: page)
+ */
 if (Meteor.isClient) {
 
 }
@@ -29,10 +39,19 @@ if (Meteor.isServer) {
       },
       ];
 
-      for( var i = 0; i < placesData.length; i++) {
-       Places.insert(placesData[i]);
-   }
-}
+        for( var i = 0; i < placesData.length; i++) {
+            Places.insert(placesData[i]);
+        }
+    }
+    
+    if ( Comments.find().count() === 0 ) {
+        Comments.insert( { 
+            text: "Hello", 
+            createdDate: new Date().getTime(), 
+            objectType: "page", 
+            objectKey: "main"
+        });
+    }
 });
 }
 

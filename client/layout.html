@@ -1,13 +1,39 @@
 <template name="layout">
   <div class="container">
-  <header class="navbar">
-      <div class="navbar-inner">
-        <a class="brand" href="{{pathFor 'main'}}">Home</a>
-      </div>
-  </header>
   <div id="main" class="row-fluid">
-    <h3> Orders - Shall we order now? </h3>
+    <div class="page-header">
+      <h1> <a href="{{pathFor 'main'}}"> Orders </a> <small>Shall we order now?</small></h1>
+        {{>userProfile }}
+    </div>    
     {{> yield}}
   </div>
   </div>
+</template>
+
+<template name="userProfile">
+    <div class="panel panel-default">
+        <div class="panel-body">
+          {{> loginButtons}}
+          <form class="form-inline pull-right" role="form">
+            <!--div class="form-group "-->
+                
+              <label for="displayName">
+                  {{>userProfileIcon}}
+              </label>
+              <a href="#" class="name-edit">{{displayName}} <span class="glyphicon glyphicon-edit"></span></a> 
+              <input type="text" class="form-inline name-input hidden" id="displayName" placeholder="Your name" value="{{displayName}}">
+              <a href="#" class="name-ok hidden"><span class="glyphicon glyphicon-ok"></span></a> 
+              <!--button type="submit" class="form-inline btn btn-sm btn-default">Change</button-->
+            <!--/div-->
+          </form>
+      </div>
+    </div>
+</template>
+
+<template name="userProfileIcon">
+  {{#if currentUser}}
+  <span class="glyphicon glyphicon-user"></span>
+  {{else}}
+  <span class="glyphicon glyphicon-globe"></span>
+  {{/if}}
 </template>

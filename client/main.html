@@ -1,29 +1,64 @@
 <template name="main">
-  {{> loginButtons}}
-  {{>userProfile }}
+    <ol class="breadcrumb">
+      <li class="active">Home</li>
+    </ol>       
 
   {{> places}}
 
   {{> introduction }}
+  
+  {{> commentsForMain}}
 </template>
 
 <template name="introduction">
-  <H2> 아직 테스트중입니다. </H2>
+  <b> 아직 테스트중입니다. </b>
+  <blockquote>
+  <i>
   주문하러 오셨어요? Place를 아무곳이나 선택하고 Table을 만들어보세요. Table을 선택하고 주문을 선택하면 같은 Table에 다른사람이 추가하는 내용도 모두 함께 나타납니다.
-</template>
-
-<template name="userProfile">
-  <div class="row">
-  <form class="form-inline" role="form">
-    <div class="form-group pull-right">
-      <label for="displayName">Name</label>
-      <input type="text" class="form-inline" id="displayName" placeholder="Your name" value="{{displayName}}">
-      <button type="submit" class="form-inline btn btn-sm btn-default">Change</button>
-    </div>
-  </form>
-  </div>
+  </i>
+  </blockquote>
 </template>
 
 <template name="loading">
   {{>spinner}}
+</template>
+
+<template name="commentsForMain">
+  {{#with simpleCommentsParamMain}}
+  {{> simpleComments }}
+  {{/with}}
+</template>
+
+<template name="simpleComments">
+    <b>Comments</b>
+    
+    {{> commentEntry}}   
+
+    <div class="list-group">    
+    {{#each comments this}}
+    {{>simpleCommentRow}}
+    {{/each}}
+    </div>
+</template>
+
+<template name="simpleCommentRow">
+    <div class="list-group-item">
+      {{#if userId}}
+      <span class="glyphicon glyphicon-user"></span>
+      {{else}}
+      <span class="glyphicon glyphicon-globe"></span>
+      {{/if}}        
+    {{userGuestDisplayNameWithIds this.userId this.guestId}}
+    {{text}}
+    </div>
+</template>
+
+
+ <template name="commentEntry">
+  <form role="form" id="add-comment">
+    <div class="form-group">
+      <input type="text" class="form-control" id="neworder" placeholder="Enter comment - Sorry. Not working yet.">
+    </div>
+    <button type="submit" class="form-control btn btn-success">Submit</button>
+  </form>
 </template>

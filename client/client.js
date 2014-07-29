@@ -107,7 +107,7 @@ Template.addMenuRow.events({
           userId: Meteor.userId(),
           guestId: ClientGlobal.guestId(),
           tableId: tableId
-        }
+        };
 
         $(e.target).find('[id=neworder]').val('');
         Orders.insert(order);
@@ -157,16 +157,48 @@ Template.main.events({
 Template.main.helpers({
 });
 
-Template.userProfile.events({
-  'submit form': function(e) {
-    e.preventDefault();
-    var displayName = $(e.target).find('[id=displayName]').val();
+function updateDisplayName(displayName) {
     if ( displayName && displayName.length > 0) {
+      console.log( 'updateDisplayName(' + displayName + ')');  
       if ( Meteor.userId() ) {
-        Meteor.users.update({_id:Meteor.user()._id}, {$set:{"profile.name": displayName}})
+        Meteor.users.update({_id:Meteor.user()._id}, {$set:{"profile.name": displayName}});
       } else {
         Guests.update({_id: ClientGlobal.guestId()}, {$set:{"name": displayName}});
       }
     }
+}
+
+function displayNameSetEditMode(editMode) {
+    if ( editMode ) {
+        /* text field */
+      $('.name-edit').addClass('hidden');
+      $('.name-ok').removeClass('hidden');
+      $('.name-input').removeClass('hidden').select();        
+    } else {
+        /* text label */
+      $('.name-edit').removeClass('hidden');
+      $('.name-ok').addClass('hidden');
+      $('.name-input').addClass('hidden');
+    }
+}
+Template.userProfile.events({
+  'submit form': function(e) {
+    e.preventDefault();
+    var displayName = $(e.target).find('[id=displayName]').val();
+    updateDisplayName(displayName);
+    displayNameSetEditMode(false);
   },
+  
+  'click .name-edit': function(e) {
+      e.preventDefault();
+      displayNameSetEditMode(true);
+  },
+  
+  'click .name-ok': function(e) {
+      e.preventDefault();
+      var displayName = $('.name-input').val();
+      updateDisplayName(displayName);
+      displayNameSetEditMode(false);
+  }
+  
 });
