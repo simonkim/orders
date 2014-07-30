@@ -91,8 +91,7 @@ ClientGlobal = {
         var table = Tables.findOne({
             _id : tableId
         });
-
-        return this.userGuestDisplayNameWithIds(table.creatorId, table.guestId);
+        return table && this.userGuestDisplayNameWithIds(table.creatorId, table.guestId);
     }
 };
 
