@@ -93,7 +93,11 @@ ClientGlobal = {
         });
 
         return this.userGuestDisplayNameWithIds(table.creatorId, table.guestId);
-    }
+    },
+    
+    isCurrentUserEither : function(userId, guestId) {
+        return (Meteor.userId() && Meteor.userId() === userId) || (guestId && ClientGlobal.guestId() === guestId);        
+    },
 };
 
 UI.registerHelper("guestId", function() {
@@ -115,17 +119,6 @@ UI.registerHelper("displayName", function() {
     }
     return name;
 }); 
-
-UI.registerHelper("simpleCommentsParamMain", function() {
-   return {
-       objectType: 'page', 
-       objectKey: 'main'
-   }; 
-});
-
-UI.registerHelper("comments", function(param) {
-   return Comments.find({objectType: param.objectType, objectKey: param.objectKey}, {sort:{ createdDate:-1}});
-});
 
 UI.registerHelper("userGuestDisplayNameWithIds", function(userId, guestId) {
    return ClientGlobal.userGuestDisplayNameWithIds(userId, guestId); 

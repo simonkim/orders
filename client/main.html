@@ -24,41 +24,6 @@
 </template>
 
 <template name="commentsForMain">
-  {{#with simpleCommentsParamMain}}
-  {{> simpleComments }}
-  {{/with}}
+    {{> simpleComments commentsMakeParam 'page' 'home'}}    
 </template>
 
-<template name="simpleComments">
-    <b>Comments</b>
-    
-    {{> commentEntry}}   
-
-    <div class="list-group">    
-    {{#each comments this}}
-    {{>simpleCommentRow}}
-    {{/each}}
-    </div>
-</template>
-
-<template name="simpleCommentRow">
-    <div class="list-group-item">
-      {{#if userId}}
-      <span class="glyphicon glyphicon-user"></span>
-      {{else}}
-      <span class="glyphicon glyphicon-globe"></span>
-      {{/if}}        
-    {{userGuestDisplayNameWithIds this.userId this.guestId}}
-    {{text}}
-    </div>
-</template>
-
-
- <template name="commentEntry">
-  <form role="form" id="add-comment">
-    <div class="form-group">
-      <input type="text" class="form-control" id="neworder" placeholder="Enter comment - Sorry. Not working yet.">
-    </div>
-    <button type="submit" class="form-control btn btn-success">Submit</button>
-  </form>
-</template>
