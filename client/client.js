@@ -56,6 +56,58 @@ Template.orders.events( {
     input.select();
 
   },
+  
+  'click .order-item': function (e) {
+      /* Select order item for editing */
+        if (Session.get('editingOrderItemId') === this._id) {
+            Session.set( 'editingOrderItemId', null);
+        } else {
+            Session.set( 'editingOrderItemId', this._id);        
+        }
+  },
+  
+  'click .order-item-edit-cancel': function(e) {
+    Session.set('editingOrderItemId', null);
+  },
+  
+  'click .order-item-edit-ok': function(e) {
+    var input = $("#order-item-name");
+    var newName = input.val();
+    if ( newName && newName.length > 0) {
+        var orderItemId = this._id;
+        console.log("changed menu name:" + input.val());
+        Session.set('editingOrderItemId', null);
+        var order = Orders.findOne({_id: orderItemId});
+        if ( order ) {
+            var orders = Orders.find({name:order.name, tableId:order.tableId}).fetch();
+            for(var i = 0; i < orders.length; i++) {
+                Orders.update({_id:orders[i]._id}, {$set:{"name": newName}});
+            }
+        }
+    }
+  },
+  
+  'click .order-item-metoo': function(e) {
+        Session.set('editingOrderItemId', null);
+        console.log( "me too:" + this.name);
+        var order = {
+          name: this.name,
+          qty: 1,
+          price: 0,
+          userId: Meteor.userId(),
+          guestId: ClientGlobal.guestId(),
+          tableId: this.tableId
+        };
+
+        Orders.insert(order);      
+  },
+});
+
+Template.orders.helpers({
+   itemEditing: function(orderId) {
+       console.log( 'itemEditing:' + orderId);
+       return true;
+   } 
 });
 Template.ordersMine.helpers({
   orders: function(tableId) {
@@ -71,13 +123,18 @@ Template.ordersMine.helpers({
 
 
 Template.orderItem.helpers({
-  userDisplayName: function(user) {
-    var name = ClientGlobal.userDisplayName(user);
-    if ( name == null || name.length == 0) {
-      name = "unknown";
-    }
-    return name;
-  },
+    userDisplayName: function(user) {
+        var name = ClientGlobal.userDisplayName(user);
+        if ( name == null || name.length == 0) {
+          name = "unknown";
+        }
+        return name;
+    },
+  
+    itemEditing: function(orderItemId) {
+        return Session.equals('editingOrderItemId', orderItemId);       
+    } 
+  
 });
 
 Template.orderItem.events( {

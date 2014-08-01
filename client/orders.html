@@ -1,7 +1,7 @@
 <template name="orders">
     <div id="orders" class="row-fluid">
 
-      <h4> Total </h4>
+      <h4> Orders </h4>
       {{> ordersAll}}
       
       <h4> My Orders </h4>
@@ -57,6 +57,22 @@
         {{price}}
         <span class="badge pull-right"> {{qty}} </span>
       </a>
+      
+      {{#if itemEditing this._id}}
+      <div class="list-group-item list-group-item-default order-item-edit">
+          <input type="text" id="order-item-name" value="{{this.name}}">
+          
+        <button class="btn btn-success btn-sm order-item-edit-ok">
+           <span class="glyphicon glyphicon-ok"> </span>
+        </button>
+        <button class="btn btn-danger btn-sm order-item-edit-cancel">
+           <span class="glyphicon glyphicon-remove"> </span>
+        </button>
+        <button class="btn btn-success btn-sm order-item-metoo">
+           <span class="glyphicon glyphicon-shopping-cart"> </span>           
+        </button>
+      </div>
+      {{/if}}
  </template>
 
  <template name="orderItemMine">
