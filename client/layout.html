@@ -1,18 +1,19 @@
 <template name="layout">
   <div class="container">
   <div id="main" class="row-fluid">
-    <div class="page-header">
-      <h3><a href="{{pathFor 'main'}}"> <span class="glyphicon glyphicon-glass"></span>SWON </a> <small> Shall we order now?</small></h3>
+    <div class="panel panel-default">
+        <div class="panel-body">
         {{>userProfile }}
-    </div>    
+      <h3> <a href="{{pathFor 'main'}}"> SWON </a> <small><span class="glyphicon glyphicon-glass"></span> Shall we order now?</small></h3>
+      </div>
+    </div>
+        
     {{> yield}}
   </div>
   </div>
 </template>
 
 <template name="userProfile">
-    <div class="panel panel-default">
-        <div class="panel-body">
           {{> loginButtons}}
           <form class="form-inline pull-right" role="form">
             <!--div class="form-group "-->
@@ -26,8 +27,6 @@
               <!--button type="submit" class="form-inline btn btn-sm btn-default">Change</button-->
             <!--/div-->
           </form>
-      </div>
-    </div>
 </template>
 
 <template name="userProfileIcon">

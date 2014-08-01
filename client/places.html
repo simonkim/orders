@@ -1,6 +1,5 @@
 <template name="places">
 	<h4> Nearby </h4>
-
 	<div class="list-group">
   	{{#each places}}
   		{{> placeRow}}
@@ -21,4 +20,7 @@
       <li class="active">{{name}}</li>
     </ol>	
 	{{> tables}}
+	
+    {{> simpleComments commentsMakeParam 'place' this._id}}
+	
 </template>

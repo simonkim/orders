@@ -42,16 +42,7 @@ if (Meteor.isServer) {
         for( var i = 0; i < placesData.length; i++) {
             Places.insert(placesData[i]);
         }
-    }
-    
-    if ( Comments.find().count() === 0 ) {
-        Comments.insert( { 
-            text: "Hello", 
-            createdDate: new Date().getTime(), 
-            objectType: "page", 
-            objectKey: "main"
-        });
-    }
+    }    
 });
 }
 

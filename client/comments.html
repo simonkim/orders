@@ -1,0 +1,40 @@
+<!-- simpleComments {objectType: type, objectKey: key} -->
+<template name="simpleComments">
+    <h4>Comments</h4>
+    {{> commentEntry}}   
+
+    <div class="list-group">    
+    {{#each comments this.objectType this.objectKey}}
+    {{>simpleCommentRow}}
+    {{/each}}
+    </div>
+</template>
+
+<template name="simpleCommentRow">
+    <div class="list-group-item">
+        {{#if userId}}
+          <span class="glyphicon glyphicon-user"></span>
+        {{else}}
+          <span class="glyphicon glyphicon-globe"></span>
+        {{/if}}        
+        {{userGuestDisplayNameWithIds this.userId this.guestId}}
+        {{text}}
+        
+        {{#if canRemoveCommentWithIds this.userId this.guestId}}
+        <button class="btn btn-danger btn-xs remove-my-comment pull-right">
+           <span class="glyphicon glyphicon-remove"> </span>
+        </button>    
+        {{/if}}
+    </div>
+</template>
+
+<template name="commentEntry">
+  <form role="form" id="add-comment">
+    <div class="form-group">
+      <input type="text" class="form-control" id="newcomment" placeholder="Enter comment">
+    </div>
+    <input type="hidden" value="{{objectType}}" id="objecttype">
+    <input type="hidden" value="{{objectKey}}" id="objectkey">
+    <button type="submit" class="form-control btn btn-success">Submit</button>
+  </form>
+</template>
