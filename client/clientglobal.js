@@ -123,3 +123,8 @@ UI.registerHelper("displayName", function() {
 UI.registerHelper("userGuestDisplayNameWithIds", function(userId, guestId) {
    return ClientGlobal.userGuestDisplayNameWithIds(userId, guestId); 
 });
+
+UI.registerHelper("spinnerRunningMessage", function() {
+    console.log("spinnerRunningMessage");
+    return "spinnerRunningMessage"; 
+});

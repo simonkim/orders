@@ -22,23 +22,23 @@
 </template>
 
 <template name="ordersAll">
-  <ul class="list-group list-group-flush">
+  <div class="list-group">
     {{#each orders _id}}
       {{> orderItem}}
     {{/each}}
-  </ul>
+  </div>
 </template>
 
 <template name="ordersMine">
-  <ul class="list-group list-group-flush">
+  <div class="list-group list-group-flush">
     {{#each orders _id}}
       {{> orderItemMine}}
     {{/each}}
-  </ul>
+  </div>
 </template>
 
 <template name="orderItem">
-      <li class="list-group-item list-group-item-success order-item">
+      <a href="#" class="list-group-item list-group-item-success order-item">
         <span class="glyphicon glyphicon-glass"> </span>
         <a href="#" class="menu-name">{{name}}</a>
 
@@ -55,11 +55,11 @@
         <span class="glyphicon glyphicon-tag"> </span>
         {{price}}
         <span class="badge pull-right"> {{qty}} </span>
-      </li>
+      </a>
  </template>
 
  <template name="orderItemMine">
-      <li class="list-group-item list-group-item-warning order-item">
+      <a href="#" class="list-group-item list-group-item-warning order-item">
         <span class="glyphicon glyphicon-glass"> </span>
         <a href="#" class="menu-name">{{name}}</a>
 
@@ -67,7 +67,7 @@
         <button class="btn btn-danger btn-sm remove-my-order pull-right">
            <span class="glyphicon glyphicon-remove"> </span>
         </button>
-      </li>
+      </a>
  </template>
 
  <template name="addMenuRow">
