@@ -1,7 +1,7 @@
 <template name="orders">
     <div id="orders" class="row-fluid">
 
-      <h4> Orders for All </h4>
+      <h4> Total </h4>
       {{> ordersAll}}
       
       <h4> My Orders </h4>
@@ -9,23 +9,24 @@
       {{> addMenuRow }}
       
       
-      <h4> Table </h4>
+      <h4> </h4>
       
-        <button class="btn btn-success form-control remove-table">
-        <span class="glyphicon glyphicon-ok"> </span>
-            
-          Finish and Save
-        </button>
-      
-      {{> removeOrderTableButton}}
+      {{> finishOrderButton}}
+      {{> cancelOrderButton}}
     </div>
 </template>
 
 <template name="ordersAll">
   <div class="list-group">
-    {{#each orders _id}}
-      {{> orderItem}}
-    {{/each}}
+    {{#if orders _id}}
+        {{#each orders _id}}
+          {{> orderItem}}
+        {{/each}}
+    {{else}}
+          <a href="#" class="list-group-item list-group-item-default">
+              Add some menus
+          </a>      
+    {{/if}}
   </div>
 </template>
 
@@ -80,12 +81,22 @@
   </form>
 </template>
 
-<template name="removeOrderTableButton">
+<template name="finishOrderButton">
+  {{#if canFinishTableId _id}}
+    {{#if orders _id}}
+    <button class="btn btn-success form-control finish-review-orders">
+        <span class="glyphicon glyphicon-ok"> </span>
+        Finish & Review
+    </button>    
+    {{/if}}
+  {{/if}}     
+</template>
+<template name="cancelOrderButton">
   {{#if canRemoveTableId _id}}
   <h4> </h4>
     <button class="btn btn-danger form-control remove-table">
         <span class="glyphicon glyphicon-remove"> </span>
-      Remove Table and Orders
+      Cancel Orders
     </button>
   {{/if}} 
 </template>

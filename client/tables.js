@@ -26,7 +26,11 @@ Template.tables.events({
 			if ( id ) {
 				Session.set("selected_table", id);
 				input.val('');
+				Router.go('tablePage', {_id: id});
 			}
+		} else if ( newTableName === null || newTableName.length == 0 ) {
+		    input.val(ClientGlobal.randomReadableString(4).toUpperCase());
+		    input.select();
 		}
 	},
 });

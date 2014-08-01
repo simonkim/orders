@@ -1,8 +1,5 @@
 
-
-/* orders */
-Template.ordersAll.helpers({
-  orders: function(tableId) {
+var ordersSumForTableId = function(tableId) {
     /* name, price, qty, userId[] */
     var orders = Orders.find( {tableId: tableId}, {sort: {name: 1}} ).fetch();
     var groups = _.groupBy( orders, function(order) {
@@ -37,6 +34,12 @@ Template.ordersAll.helpers({
       ordersSum.push(sum);
     });
     return ordersSum;
+};
+
+/* orders */
+Template.ordersAll.helpers({
+  orders: function(tableId) {
+    return ordersSumForTableId(tableId);
   },
   ordersAll: function(tableId) {
     return Orders.find( {tableId: tableId}, {sort: {name: 1}} );
@@ -75,7 +78,7 @@ Template.orderItem.helpers({
     }
     return name;
   },
-})
+});
 
 Template.orderItem.events( {
 
@@ -90,11 +93,6 @@ Template.orderItemMine.events({
 Template.addMenuRow.events({
   'submit form': function(e) {
     e.preventDefault();
-    /*
-      - Take the input text
-      - Add the menu to the order list
-      - clear the text input
-      */
 
       var neworder = $(e.target).find('[id=neworder]').val();
       var tableId = $(e.target).find('[id=tableId]').val();
@@ -111,6 +109,8 @@ Template.addMenuRow.events({
 
         $(e.target).find('[id=neworder]').val('');
         Orders.insert(order);
+      } else if ( neworder === null || neworder.length == 0 ) {
+         $(e.target).find('[id=neworder]').select(); 
       } else {
         console.log( 'Table not specified');
       }
@@ -118,7 +118,33 @@ Template.addMenuRow.events({
 }
 });
 
-Template.removeOrderTableButton.helpers( {
+Template.finishOrderButton.helpers({
+  orders: function(tableId) {
+    return ordersSumForTableId(tableId);
+  },
+  
+  canFinishTableId: function(tableId) {
+    var table = Tables.findOne({_id: tableId});
+
+    var canRemove = table && table.creatorId == Meteor.userId();
+    if ( !canRemove ) {
+      canRemove = table && table.guestId == ClientGlobal.guestId();
+    }
+    return canRemove;
+  },
+  
+});
+
+Template.finishOrderButton.events( {
+  'click .finish-review-orders': function(e) {
+      /* update the table: finished */
+        // Tables.update({_id: this._id}, {$set:{"finished": true}});
+      /* Redirect to review orders page */    
+        // Router.go('review', {_id: this._id});
+  }    
+});
+
+Template.cancelOrderButton.helpers( {
   canRemoveTableId: function(tableId) {
     var table = Tables.findOne({_id: tableId});
 
@@ -134,7 +160,7 @@ Template.removeOrderTableButton.helpers( {
   }
 });
 
-Template.removeOrderTableButton.events( {
+Template.cancelOrderButton.events( {
   'click .remove-table': function(e) {
     Tables.remove({_id: this._id});
     Router.go('placePage', {_id: this.placeId});
@@ -157,6 +183,7 @@ Template.main.events({
 Template.main.helpers({
 });
 
+/* userProfile */
 function updateDisplayName(displayName) {
     if ( displayName && displayName.length > 0) {
       console.log( 'updateDisplayName(' + displayName + ')');  

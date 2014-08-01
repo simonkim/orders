@@ -1,5 +1,5 @@
 <template name="tables">
-	<H4> Tables </H4>
+	<H4> Open Orders </H4>
 	{{> tableMenu}}
 	{{> newTable}}
 </template>
@@ -8,19 +8,11 @@
 	<form role="form">
 		<div class="form-group">
 			<label for="newtable"></label>
-			<input type="text" class="form-control" id="newtable" placeholder="New table name">
+			<input type="text" class="form-control" id="newtable" placeholder="Give a name and...">
 		</div>
 		<input type="hidden" id="placeId" value="{{_id}}">
-		<button type="submit" class="form-control btn btn-success">Add Table</button>
+		<button type="submit" class="form-control btn btn-success">Begin New Orders</button>
 	</form>
-</template>
-
-<template name="removeTableButton">
-	{{#if canRemoveActiveTable}}
-		<button class="btn btn-danger remove-table pull-right">
-			Delete Table and Orders: '{{activeTableName}}'
-        </button>
-    {{/if}}	
 </template>
 
 <template name="tableMenu">
