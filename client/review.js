@@ -21,7 +21,7 @@ Template.reviewPage.events( {
             placeId: placeId,
             name: order.name,
             price: order.price,
-            count: 1
+            count: order.qty
         };
         menuAddCountOrInsert(menu);
     });
