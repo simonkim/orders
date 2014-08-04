@@ -152,6 +152,34 @@ ClientGlobal = {
         var date = new Date(time);
         return date.toLocaleDateString();
     },
+    
+    renameOrderMenuItem: function(newName, orderItemId) {
+        
+        console.log("changed menu name:" + newName + ", orderItemId:" + orderItemId);
+        Session.set('editingOrderItemId', null);
+        var order = Orders.findOne({_id: orderItemId});
+        if ( order ) {
+            var orders = Orders.find({name:order.name, tableId:order.tableId}).fetch();
+            for(var i = 0; i < orders.length; i++) {
+                Orders.update({_id:orders[i]._id}, {$set:{"name": newName}});
+            }
+            
+            var table = Tables.findOne({_id: order.tableId});
+            var menuOldName = table && table.placeId && Menus.findOne({placeId: table.placeId, name:order.name});
+            if ( menuOldName ) {
+                var menuNewName = table && table.placeId && Menus.findOne({placeId: table.placeId, name:newName});
+                if ( menuNewName ) {
+                    console.log( 'rename menu: update and remove merge:' + newName);
+                    Menus.update({_id:menuNewName._id}, {$inc: {"count": menuOldName.count}});
+                    Menus.remove({_id:menuOldName._id});
+                } else {
+                    console.log( 'rename menu: simple rename:' + newName);
+                    Menus.update({_id:menuOldName._id}, {$set: {"name": newName}});
+                }
+            }
+        } 
+     },
+
 };
 
 UI.registerHelper("guestId", function() {

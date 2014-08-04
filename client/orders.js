@@ -58,15 +58,8 @@ Template.orders.events( {
     var newName = input.val();
     if ( newName && newName.length > 0) {
         var orderItemId = this._id;
-        console.log("changed menu name:" + input.val());
-        Session.set('editingOrderItemId', null);
-        var order = Orders.findOne({_id: orderItemId});
-        if ( order ) {
-            var orders = Orders.find({name:order.name, tableId:order.tableId}).fetch();
-            for(var i = 0; i < orders.length; i++) {
-                Orders.update({_id:orders[i]._id}, {$set:{"name": newName}});
-            }
-        }
+        
+        ClientGlobal.renameOrderMenuItem(newName, orderItemId);
     }
   },
   
