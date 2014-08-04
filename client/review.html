@@ -1,0 +1,62 @@
+<template name="reviewPage">
+    {{> breadCrumbTable}}
+    <h4> Review Order </h4>
+    {{> reviewOrdersAll}}
+</template>
+
+<template name="reviewButtons">
+    <div class="btn-group btn-group-justified">
+        <a role="button" class="btn btn-danger review-cancel">
+           <span class="glyphicon glyphicon-remove">  </span> Cancel
+        </a>
+        {{#if userCanFinishOrderTableId this._id}}
+        <a role="button" class="btn btn-success review-ok">
+           <span class="glyphicon glyphicon-ok">  </span> Finish
+        </a>
+        {{/if}}
+    </div>   
+</template>
+
+
+<template name="reviewOrdersAll">
+    <div class="list-group">
+        {{#each orders _id}}
+          {{> reviewOrderItem}}
+        {{/each}}
+        <div class="list-group-item list-group-item-info order-item">
+            Total
+            <span class="badge pull-right"> {{orderTotalQty this._id}} </span>
+            
+        </div>
+        <div class="list-group-item list-group-item-warning order-item">
+            Host - <span class="glyphicon glyphicon-user"> </span> {{userGuestDisplayNameWithIds creatorId guestId}}  
+        </div>
+        <div class="list-group-item list-group-item-default order-item">
+            {{> reviewButtons}}  
+        </div>
+    </div>
+</template>
+
+<template name="reviewOrderItem">
+      <a href="#" class="list-group-item list-group-item-default order-item">
+        <div>
+            <span class="glyphicon glyphicon-glass"> </span>
+            <a href="#" class="menu-name">{{name}}</a>
+                (KRW {{price}})        
+            <span class="badge pull-right"> {{qty}} </span>
+        </div>
+        
+        <div>
+        <span class="glyphicon glyphicon-user"> </span>
+         
+        {{#each users}}
+            {{userDisplayName this}} 
+        {{/each}}
+        
+        {{#each guests}}
+            {{this.name}}
+        {{/each}}
+        </div>
+        
+      </a>
+ </template>

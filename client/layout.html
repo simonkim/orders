@@ -14,19 +14,19 @@
 </template>
 
 <template name="userProfile">
-          {{> loginButtons}}
-          <form class="form-inline pull-right" role="form">
-            <!--div class="form-group "-->
-                
-              <label for="displayName">
-                  {{>userProfileIcon}}
-              </label>
-              <a href="#" class="name-edit">{{displayName}} <span class="glyphicon glyphicon-edit"></span></a> 
-              <input type="text" class="form-inline name-input hidden" id="displayName" placeholder="Your name" value="{{displayName}}">
-              <a href="#" class="name-ok hidden"><span class="glyphicon glyphicon-ok"></span></a> 
-              <!--button type="submit" class="form-inline btn btn-sm btn-default">Change</button-->
-            <!--/div-->
-          </form>
+      {{> loginButtons}}
+      <form class="form-inline pull-right" role="form">
+    <!--div class="form-group "-->
+        
+      <label for="displayName">
+          {{>userProfileIcon}}
+      </label>
+      <a href="#" class="name-edit">{{displayName}} <span class="glyphicon glyphicon-edit"></span></a> 
+      <input type="text" class="form-inline name-input hidden" id="displayName" placeholder="Your name" value="{{displayName}}">
+      <a href="#" class="name-ok hidden"><span class="glyphicon glyphicon-ok"></span></a> 
+      <!--button type="submit" class="form-inline btn btn-sm btn-default">Change</button-->
+    <!--/div-->
+      </form>
 </template>
 
 <template name="userProfileIcon">

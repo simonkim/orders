@@ -33,11 +33,36 @@ Template.tables.events({
 		    input.select();
 		}
 	},
+	'click .view-old-orders': function(e) {
+	    Session.set('placeIdViewingOldTables', this._id);
+	},
+    'click .hide-old-orders': function(e) {
+        Session.set('placeIdViewingOldTables', null);
+    }
+	
+});
+
+Template.finishedTables.helpers({
+    tables: function(placeId) {
+        return Tables.find({placeId: placeId, finished:true}, {sort: {created: -1}});
+    },
+    placeIdViewingOldTables: function() {
+        return Session.get('placeIdViewingOldTables') == this._id;
+    }
+});
+
+Template.finishedTableRow.helpers({
+    tableOwnerName: function() {
+        return ClientGlobal.tableOwnerName(this._id);
+    },
+    createdDateString: function() {
+        return ClientGlobal.dateStringFromTime(this.created);
+    },
 });
 
 Template.tableMenu.helpers( {
 	tables: function(placeId) {
-		return Tables.find({placeId: placeId});
+		return Tables.find({placeId: placeId, finished:null});
 	},
 });
 
@@ -47,9 +72,13 @@ Template.tableMenuRow.helpers( {
 	}
 });
 
-Template.tablePage.helpers( {
+Template.breadCrumbTable.helpers( {
 	placeName: function() {
-		var place = Places.findOne({_id: this.placeId});
-		return place && place.name;
+	    //console.log('breadCrumbTable.placeName(), this:' + JSON.stringify(this));
+	    if ( this ) {
+            var place = Places.findOne({_id: this.placeId});
+            return place && place.name;
+	    }
+	    return [];
 	}
 });

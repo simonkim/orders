@@ -1,18 +1,20 @@
 <template name="orders">
     <div id="orders" class="row-fluid">
+          <h4> Order </h4>
+          {{> ordersAll}}
 
-      <h4> Orders </h4>
-      {{> ordersAll}}
-      
-      <h4> My Orders </h4>
-      {{> ordersMine}}
-      {{> addMenuRow }}
-      
-      
-      <h4> </h4>
-      
-      {{> finishOrderButton}}
-      {{> cancelOrderButton}}
+          {{#if ordersOpen}}
+          <h4> </h4>
+              {{> popularMenus }}
+          {{/if}}
+            
+
+      {{#if ordersOpen}}
+          <h4> My Order </h4>
+          {{> ordersMine}}
+          {{> addMenuRow }}
+      {{/if}}
+
     </div>
 </template>
 
@@ -22,27 +24,37 @@
         {{#each orders _id}}
           {{> orderItem}}
         {{/each}}
+        <div class="list-group-item list-group-item-info order-item">
+            Total
+            <span class="badge pull-right"> {{orderTotalQty this._id}} </span>
+            
+        </div>
+        
     {{else}}
-          <a href="#" class="list-group-item list-group-item-default">
+          <a href="#" class="list-group-item list-group-item-info order-empty">
               Add some menus
           </a>      
     {{/if}}
-  </div>
-</template>
-
-<template name="ordersMine">
-  <div class="list-group list-group-flush">
-    {{#each orders _id}}
-      {{> orderItemMine}}
-    {{/each}}
+        <div class="list-group-item list-group-item-warning order-item">
+            Host - <span class="glyphicon glyphicon-user"> </span> {{userGuestDisplayNameWithIds this.creatorId this.guestId}}
+        </div>
+        
+    {{> orderMainButtons}}
   </div>
 </template>
 
 <template name="orderItem">
-      <a href="#" class="list-group-item list-group-item-success order-item">
+      <a href="#" class="list-group-item list-group-item-default order-item">
+          <div>
+              
         <span class="glyphicon glyphicon-glass"> </span>
         <a href="#" class="menu-name">{{name}}</a>
-
+        <span class="glyphicon glyphicon-tag"> </span>
+        {{price}}
+        <span class="badge pull-right"> {{qty}} </span>
+          </div>
+        <div>
+            
         <span class="glyphicon glyphicon-user"> </span>
          
         {{#each users}}
@@ -52,10 +64,8 @@
         {{#each guests}}
         {{this.name}}
         {{/each}}
+        </div>
         
-        <span class="glyphicon glyphicon-tag"> </span>
-        {{price}}
-        <span class="badge pull-right"> {{qty}} </span>
       </a>
       
       {{#if itemEditing this._id}}
@@ -75,44 +85,89 @@
       {{/if}}
  </template>
 
- <template name="orderItemMine">
-      <a href="#" class="list-group-item list-group-item-warning order-item">
+<template name="ordersMine">
+  <div class="list-group list-group-flush">
+    {{#each orders _id}}
+      {{> orderItemMine}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="orderItemMine">
+      <a href="#" class="list-group-item list-group-item-warning order-item-mine">
         <span class="glyphicon glyphicon-glass"> </span>
-        <a href="#" class="menu-name">{{name}}</a>
+        <a href="#" class="menu-name-mine">{{name}}</a>
 
         <span class="glyphicon glyphicon-tag"> </span> {{price}}
         <button class="btn btn-danger btn-sm remove-my-order pull-right">
            <span class="glyphicon glyphicon-remove"> </span>
         </button>
       </a>
- </template>
-
- <template name="addMenuRow">
-  <form role="form" id="add-menu">
-    <div class="form-group">
-      <input type="text" class="form-control" id="neworder" placeholder="Enter menu">
-    </div>
-      <input type="hidden" id="tableId" value="{{_id}}">
-    <button type="submit" class="form-control btn btn-success">Add</button>
-  </form>
 </template>
 
-<template name="finishOrderButton">
-  {{#if canFinishTableId _id}}
+<template name="addMenuRow">
+      <form role="form" id="add-menu">
+        <div class="form-group">
+          <input type="text" class="form-control" id="neworder" placeholder="Enter menu or check Popular Menus">
+        </div>
+          <input type="hidden" id="tableId" value="{{_id}}">
+        <button type="submit" class="form-control btn btn-success">Add</button>
+      </form>
+</template>
+
+
+<template name="orderMainButtons">
+  {{#if userCanReviewOrderTableId _id}}
+    <div class="list-group-item list-group-item-default order-empty">
+        <div class="btn-group btn-group-justified">
+          {{#if ordersOpen}}
+              {{> removeOrdersButton}}
+              {{> reviewOrderButton}}
+          {{else}}
+              {{> removeOrdersButton}}
+          {{/if}}
+        </div>
+    </div>   
+  {{/if}}         
+</template>
+
+<template name="reviewOrderButton">
     {{#if orders _id}}
-    <button class="btn btn-success form-control finish-review-orders">
+    <a role="button" class="btn btn-success review-order">
         <span class="glyphicon glyphicon-ok"> </span>
-        Finish & Review
-    </button>    
+        Review
+    </a>    
     {{/if}}
-  {{/if}}     
 </template>
-<template name="cancelOrderButton">
-  {{#if canRemoveTableId _id}}
-  <h4> </h4>
-    <button class="btn btn-danger form-control remove-table">
+
+<template name="removeOrdersButton">
+  {{#if userCanRemoveTableId _id}}
+    <a role="button" class="btn btn-danger remove-table">
         <span class="glyphicon glyphicon-remove"> </span>
-      Cancel Orders
-    </button>
+      Delete
+    </a>
   {{/if}} 
+</template>
+
+<template name="popularMenus">
+    <div class="list-group">
+        {{#if viewingPopularOrders}}
+              <a href="#" class="list-group-item list-group-item-info hide-popular-menus"> 
+                <span class="glyphicon glyphicon-star"> </span> 
+                Hide 
+                <span class="glyphicon glyphicon-chevron-up pull-right"> </span> 
+              </a>
+            {{#each popularMenus}}
+                <a href="#" class="list-group-item list-group-item-default popular-menu-item">
+                <span class="glyphicon glyphicon-glass"> </span> {{name}} (KRW {{price}})
+                </a>
+            {{/each}}
+        {{else}}
+              <a href="#" class="list-group-item list-group-item-info show-popular-menus"> 
+                <span class="glyphicon glyphicon-star"> </span> 
+                Popular Menus 
+                <span class="glyphicon glyphicon-chevron-down pull-right"> </span> 
+              </a>
+        {{/if}}
+    </div>
 </template>

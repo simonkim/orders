@@ -1,14 +1,14 @@
 <template name="places">
 	<h4> Nearby </h4>
 	<div class="list-group">
-  	{{#each places}}
-  		{{> placeRow}}
-  	{{/each}}
-	</div>
+        {{#each places}}
+            {{> placeRow}}
+        {{/each}}
+	</div>	
 </template>
 
 <template name="placeRow">
-  <a href="{{pathFor 'placePage'}}" class="list-group-item list-group-item-success">
+  <a href="{{pathFor 'placePage'}}" class="list-group-item list-group-item-default">
       <span class="glyphicon glyphicon-map-marker"> </span> {{name}}
       <span class="label pull-right label-default">{{distance}}10m</span> 
   </a>

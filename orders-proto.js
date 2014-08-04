@@ -3,7 +3,7 @@ Tables = new Meteor.Collection("tables");
 Places = new Meteor.Collection("places");
 Guests = new Meteor.Collection("guests");
 Comments = new Meteor.Collection("comments");
-
+Menus = new Meteor.Collection("menus");
 /* Tables
  * - name
  * - created

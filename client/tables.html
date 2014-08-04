@@ -2,6 +2,16 @@
 	<H4> Open Orders </H4>
 	{{> tableMenu}}
 	{{> newTable}}
+
+	{{> finishedTables}}
+</template>
+
+<template name="tableMenu">
+    <div class="list-group">
+    {{#each tables _id}}
+        {{> tableMenuRow}}
+    {{/each}}
+    </div>
 </template>
 
 <template name="newTable">
@@ -15,28 +25,59 @@
 	</form>
 </template>
 
-<template name="tableMenu">
-	<div class="list-group">
-  	{{#each tables _id}}
-  		{{> tableMenuRow}}
-  	{{/each}}
-	</div>
-</template>
 
 <template name="tableMenuRow">
-  <a href="{{pathFor 'tablePage'}}" class="list-group-item list-group-item-success "> 
-      <span class="glyphicon glyphicon-shopping-cart"> </span> {{name}} - {{tableOwnerName}} 
+  <a href="{{pathFor 'tablePage'}}" class="list-group-item list-group-item-default ">
+      <span class="glyphicon glyphicon-shopping-cart"> </span> {{name}} 
+        - <span class="glyphicon glyphicon-user"> </span> 
+         {{tableOwnerName}}
+        - KRW {{orderTotalCost this._id}} 
+      <span class="badge pull-right"> {{orderTotalQty this._id}} </span>
   </a>
 </template>
 
-<template name="tablePage">
+<template name="finishedTables">
+    <div class="list-group">
+        {{#if placeIdViewingOldTables}}
+              <a href="#" class="list-group-item list-group-item-default hide-old-orders"> 
+                Hide <span class="glyphicon glyphicon-chevron-up pull-right"> </span> 
+              </a>
+            {{#each tables _id}}
+            {{> finishedTableRow}}
+            {{/each}}
+        {{else}}
+              <a href="#" class="list-group-item list-group-item-default view-old-orders"> 
+                View Old Orders <span class="glyphicon glyphicon-chevron-down pull-right"> </span> 
+              </a>
+        {{/if}}
+    </div>
+</template>
+
+<template name="finishedTableRow">
+  <a href="{{pathFor 'tablePage'}}" class="list-group-item list-group-item-default ">
+      <div>
+          <span class="glyphicon glyphicon-shopping-cart"> </span> {{name}} - 
+          KRW {{orderTotalCost this._id}} 
+          <span class="badge pull-right"> {{orderTotalQty this._id}} </span>
+      </div> 
+      <div>
+          <span class="glyphicon glyphicon-user"> </span> {{tableOwnerName}} 
+          <span class="pull-right">{{createdDateString}}</span> 
+      </div> 
+  </a>
+</template>
+
+<template name="breadCrumbTable">
     <ol class="breadcrumb">
       <li><a href="{{pathFor 'main'}}">Home</a></li>
       <li><a href="{{pathFor 'placePage' _id=this.placeId}}">{{placeName}}</a></li>
       <li class="active">{{name}}</li>
-    </ol>    	
+    </ol>       
+</template>
+
+<template name="tablePage">    
+    {{> breadCrumbTable}}
 	{{> orders}}
 	
     {{> simpleComments commentsMakeParam 'table' this._id}}
-	
 </template>

@@ -28,6 +28,42 @@ var genReadableString = function(length) {
     return priv.result;
 };
 
+var ordersSumForTableId = function(tableId) {
+    /* name, price, qty, userId[] */
+    var orders = Orders.find( {tableId: tableId}, {sort: {name: 1}} ).fetch();
+    var groups = _.groupBy( orders, function(order) {
+        return order.name;
+    });
+    var ordersSum = [];
+
+    /*
+     * 1. group orders by name -> {name: orders[]}
+     * 2. reduce each orders for the same name
+     */
+    _.each( groups, function(orders, name, list) {
+      orders[0].users = [];
+      orders[0].guests = [];
+      var sum = _.reduce(orders, function(total, order) {
+        if ( total._id != order._id) {
+          total.qty += order.qty;
+        }
+
+        var user = Meteor.users.findOne({_id: order.userId});
+        if ( user ) {
+          total.users.push(user);
+        } else {
+          var guest = Guests.findOne({_id: order.guestId});
+          if ( guest ) {
+            total.guests.push(guest);
+          }
+        }
+
+        return total;
+      }, orders[0]);
+      ordersSum.push(sum);
+    });
+    return ordersSum;
+};
 ClientGlobal = {
     /* Usage:
      * ClientGlobal.guestId()
@@ -68,7 +104,9 @@ ClientGlobal = {
     },
 
     userDisplayName : function(user) {
-        return user && user.profile && user.profile.name;
+        var name = null;
+        name = user && user.profile && user.profile.name;
+        return name;
     },
     
     userGuestDisplayNameWithIds : function(userId, guestId) {
@@ -85,7 +123,15 @@ ClientGlobal = {
         }
         return name;
     },
+    userCanFinishOrderTableId: function(tableId) {
+        var table = Tables.findOne({_id: tableId});
     
+        var canRemove = table && table.creatorId && table.creatorId == Meteor.userId();
+        if ( !canRemove ) {
+          canRemove = table && table.guestId && table.guestId == ClientGlobal.guestId();
+        }
+        return canRemove;
+    },
     tableOwnerName : function(tableId) {
 
         var table = Tables.findOne({
@@ -97,6 +143,14 @@ ClientGlobal = {
     
     isCurrentUserEither : function(userId, guestId) {
         return (Meteor.userId() && Meteor.userId() === userId) || (guestId && ClientGlobal.guestId() === guestId);        
+    },
+    
+    ordersSumForTableId: function(tableId) {
+        return ordersSumForTableId(tableId);
+    },
+    dateStringFromTime: function(time) {
+        var date = new Date(time);
+        return date.toLocaleDateString();
     },
 };
 
@@ -125,6 +179,52 @@ UI.registerHelper("userGuestDisplayNameWithIds", function(userId, guestId) {
 });
 
 UI.registerHelper("spinnerRunningMessage", function() {
-    console.log("spinnerRunningMessage");
     return "spinnerRunningMessage"; 
+});
+
+UI.registerHelper("userCanRemoveTableId", function(tableId) {
+    var table = Tables.findOne({_id: tableId});
+
+    var canRemove = table && Meteor.userId() !== null && table.creatorId == Meteor.userId();
+    if ( !canRemove ) {
+      canRemove = table && table.guestId == ClientGlobal.guestId();
+    }
+    return canRemove;
+});
+
+UI.registerHelper("orderTotalQty", function(tableId) {
+      var orders = ClientGlobal.ordersSumForTableId(tableId);
+      var qty = 0;
+      _.each( orders, function(order) {
+          qty += order.qty;
+      });
+      return qty;
+});
+
+UI.registerHelper("orderTotalCost", function(tableId) {
+      var orders = ClientGlobal.ordersSumForTableId(tableId);
+      var cost = 0;
+      _.each( orders, function(order) {
+          cost += order.price;
+      });
+      return cost;
+});
+UI.registerHelper("userCanReviewOrderTableId", function(tableId) {
+    /*
+     * canFinishOrder or
+     * user has placed an order
+     */
+    var canReview = ClientGlobal.userCanFinishOrderTableId(tableId);
+    if ( !canReview ) {
+        if ( Meteor.userId()) {
+            canReview = Orders.find({tableId: tableId, userId:Meteor.userId()}).count() > 0;
+        } else {
+            canReview = Orders.find({tableId: tableId, guestId:ClientGlobal.guestId()}).count() > 0;
+        }
+    }
+    return canReview;
+});
+
+UI.registerHelper("userCanFinishOrderTableId", function(tableId) {
+      return ClientGlobal.userCanFinishOrderTableId(tableId);
 });
