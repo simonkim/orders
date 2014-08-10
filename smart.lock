@@ -5,7 +5,8 @@
       "bootstrap-3": {},
       "iron-router": {},
       "persistent-session": {},
-      "spin": {}
+      "spin": {},
+      "googlemaps": {}
     },
     "packages": {
       "bootstrap-3": {
@@ -27,6 +28,11 @@
         "git": "https://github.com/SachaG/meteor-spin.git",
         "tag": "v2.0.4",
         "commit": "f7b1e12a7caff1283cdb3671a393c182d0ae9862"
+      },
+      "googlemaps": {
+        "git": "https://github.com/drewjw81/meteor-googlemaps.git",
+        "tag": "v0.0.2",
+        "commit": "da8785c82cfd7de0111f898ef10728e7ed24e361"
       },
       "iron-layout": {
         "git": "https://github.com/EventedMind/iron-layout.git",

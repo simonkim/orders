@@ -1,0 +1,91 @@
+
+<template name="toolbar">
+    <div class="list-group">
+    <div class="list-group-item list-group-item-default">
+        <a href="{{pathFor 'experiments'}}" role="button" class="btn btn-sm btn-warning"> Experiments </a>
+    </div>
+    </div>          
+</template>
+
+<template name="experiments">
+    <h4>Experiments</h4>
+    <div class="list-group">
+        {{#each rows}}
+        {{> simpleListRow }}
+        {{/each}}
+    </div>      
+</template>
+
+<template name="simpleListRow">
+    <div class="list-group-item list-group-item-default">
+        <div class="btn-group btn-group-justified">
+            <a href="{{url}}" role="button" class="btn btn-success"> {{text}} </a>
+        </div>
+    </div>
+</template>
+
+<template name="expNearby">
+    <H4>Nearby</H4>
+    <div class="list-group">
+        {{#each nearbyPlaces}}
+            {{> placeRow}}
+        {{/each}}
+    </div>      
+</template>
+
+<template name="expMap">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <input class="form-control" id="input-anyplace" type="text" size="50" placeholder="Search Place">
+            
+            <div id="map-canvas" style="margin:10px auto"></div>
+            
+            <h4>Map bounds - debug</h4>
+            <div class="list-group">
+                {{#with mapBounds}}
+                <div class="list-group-item list-group-item-default">
+                Center: {{center.latitude}}, {{center.longitude}}
+                </div>
+                <div class="list-group-item list-group-item-default">
+                North East: {{northEast.latitude}}, {{northEast.longitude}}
+                </div>
+                <div class="list-group-item list-group-item-default">
+                South West: {{southWest.latitude}}, {{southWest.longitude}}
+                </div>
+                {{/with}}    
+                
+                {{#each placesInBounds}}
+                <div class="list-group-item list-group-item-default">
+                    {{name}} <!--{{coords.coordinates[0]}}, {{coords.coordinates[1]}} -->
+                </div>
+                {{/each}}
+            </div>        
+            <h4>Nearby Places</h4>
+            <input class="form-control" id="input-nearby" type="text" size="50" placeholder="Search Nearby">
+            
+            <a href="#" role="button" class="btn btn-success btn-nearby"> Search </a>
+            <div class="list-group">
+            {{#each nearbyPlaces}}
+                <div class="list-group-item list-group-item-default">
+                {{name}} <!--({{coords.coordinates[1]}}, {{coords.coordinates[0]}})-->
+                
+                    <a href="#" role="button" class="btn btn-success btn-add-place pull-right"> 
+                        <span class="glyphicon glyphicon-plus"></span> 
+                    </a>
+                </div>
+            {{/each}}
+            </div>        
+        </div>
+        
+    </div> 
+       
+</template>
+
+<template name="exp4sq">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            Venues to come...
+        <input id="searchTextField" type="text" size="50" placeholder="Search Nearby Places">
+        </div>
+    </div>    
+</template>

@@ -3,15 +3,18 @@
   <div id="main" class="row-fluid">
     <div class="panel panel-default">
         <div class="panel-body">
-        {{>userProfile }}
-      <h3> <a href="{{pathFor 'main'}}"> SWON </a> <small><span class="glyphicon glyphicon-glass"></span> Shall we order now?</small></h3>
-      </div>
+            {{>userProfile }}
+            <h3> <a href="{{pathFor 'main'}}"> SWON </a> <small><span class="glyphicon glyphicon-glass"></span> Shall we order now?</small></h3>
+        </div>
     </div>
+
+    {{> errors}}
         
     {{> yield}}
   </div>
   </div>
 </template>
+
 
 <template name="userProfile">
       {{> loginButtons}}

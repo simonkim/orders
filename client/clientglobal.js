@@ -182,6 +182,38 @@ ClientGlobal = {
 
 };
 
+MapBounds = {
+  get: function(){
+      console.log('MapBounds.get(' + JSON.stringify(this) + ')');
+      
+        if (!this.dependency) {
+          this.dependency = new Deps.Dependency();
+        }
+        this.dependency.depend();
+        if (this.sw && this.ne)
+          return { southWest : this.sw, northEast : this.ne };
+  },
+
+  set: function(bounds){
+      console.log('MapBounds.set(' + JSON.stringify(bounds) + ')');
+      
+      if (!_.isEqual(bounds.southWest, this.sw) || !_.isEqual(bounds.northEast, this.ne)) {
+        this.sw = bounds.southWest;
+        this.ne = bounds.northEast;
+        this.dependency.changed();
+      }
+  }
+};
+
+// Deps.autorun(function(){
+    // Session.set('loading', true);
+    // console.log('subscribing places...');
+    // Meteor.subscribe('places', MapBounds.get(), function(){
+        // Session.set('loading', false);
+    // });;
+// });    
+
+
 UI.registerHelper("guestId", function() {
     //{{guestId}}
     return ClientGlobal.guestId();

@@ -1,0 +1,6 @@
+{
+    "readme" : "Copy this file to private/settings.json and edit with your own settings such as Google Maps API Key"
+    "googlemaps": {
+        "key" : "YOUR GOOGLEMAPS API KEY"
+    }
+}

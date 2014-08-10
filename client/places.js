@@ -4,3 +4,7 @@ Template.places.helpers({
     return Places.find();
   },
 });
+
+Template.places.rendered = function() {
+    MapBounds.set({});    
+};
