@@ -1,5 +1,6 @@
 
 /* misc. */
+Meteor.subscribe("guests");
 
 Template.nearby.events({
   'click .label': function (e) {
@@ -14,14 +15,17 @@ Template.nearby.helpers({
 
 /* userProfile */
 function updateDisplayName(displayName) {
-    if ( displayName && displayName.length > 0) {
-      console.log( 'updateDisplayName(' + displayName + ')');  
-      if ( Meteor.userId() ) {
-        Meteor.users.update({_id:Meteor.user()._id}, {$set:{"profile.name": displayName}});
-      } else {
-        Guests.update({_id: ClientGlobal.guestId()}, {$set:{"name": displayName}});
-      }
+    var result = 0;
+    if (displayName && displayName.length > 0) {
+        console.log('updateDisplayName(' + displayName + ')');
+        if (Meteor.userId()) {
+            result = Meteor.users.update({_id: Meteor.user()._id}, {$set: {"profile.name": displayName}});
+        } else {
+            var guestId = ClientGlobal.guestId();
+            result = Guests.update({_id: guestId}, {$set: {"name": displayName}});
+        }
     }
+    return result;
 }
 
 function displayNameSetEditMode(editMode) {

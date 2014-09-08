@@ -19,6 +19,33 @@ var insertOrder = function(menuName, tableId) {
     return Orders.insert(order);      
 };
 
+var menuAddCountOrInsert = function(menu) {
+    var m = Menus.findOne({name:menu.name, placeId:menu.placeId});
+    if (m) {
+        console.log( 'menu:' + m.name + ", count:" + (m.count +1));
+        Menus.update({_id: m._id}, {$inc:{"count": 1}});
+    } else {
+        Menus.insert(menu);
+    }
+};
+
+var finishOrdersWithTableId = function(tableId, placeId) {
+    var orders = Orders.find({tableId:tableId}).fetch();
+    _.each( orders, function(order) {
+        console.log('order.name:' + order.name + ', placeId:' + placeId);
+        // Menus(placeId, name, price, count)
+        var menu = {
+            placeId: placeId,
+            name: order.name,
+            price: order.price,
+            count: order.qty
+        };
+        menuAddCountOrInsert(menu);
+    });
+
+    Tables.update({_id: tableId}, {$set:{"finished": true}});
+};
+
 /* orders */
 Template.ordersAll.helpers({
   orders: function(tableId) {
@@ -27,6 +54,9 @@ Template.ordersAll.helpers({
   ordersAll: function(tableId) {
     return Orders.find( {tableId: tableId}, {sort: {name: 1}} );
   },
+  ordersOpen: function() {
+        return this.finished !== true;
+  }
 });
 
 Template.orders.events( {
@@ -55,10 +85,6 @@ Template.orders.events( {
         }
   },
   
-  'click .order-item-edit-cancel': function(e) {
-    Session.set('editingOrderItemId', null);
-  },
-  
   'click .order-item-edit-ok': function(e) {
     var input = $("#order-item-name");
     var newName = input.val();
@@ -70,10 +96,10 @@ Template.orders.events( {
   },
   
   'click .order-item-metoo': function(e) {
-        Session.set('editingOrderItemId', null);
         console.log( "me too:" + this.name);
         insertOrder(this.name, this.tableId); 
   },
+
 });
 
 
@@ -82,19 +108,6 @@ Template.orders.helpers({
        return this.finished !== true;
    } 
 });
-
-Template.ordersMine.helpers({
-  orders: function(tableId) {
-    var list;
-    if ( Meteor.userId() ) {
-      list = Orders.find( {userId: Meteor.userId(), tableId: tableId}, {sort: {name: 1}} );
-    } else {
-      list = Orders.find( {guestId: ClientGlobal.guestId(), tableId: tableId}, {sort: {name: 1}} );
-    }
-    return list;
-  }
-});
-
 
 Template.orderItem.helpers({
     userDisplayName: function(user) {
@@ -107,18 +120,61 @@ Template.orderItem.helpers({
   
     itemEditing: function(orderItemId) {
         return Session.equals('editingOrderItemId', orderItemId);       
-    } 
-  
+    },
 });
 
 Template.orderItem.events( {
-
+    'submit form': function(e) {
+        e.preventDefault();
+        var input = $("#order-item-name");
+        var newName = input.val();
+        if ( newName && newName.length > 0) {
+            var orderItemId = this._id;
+            ClientGlobal.renameOrderMenuItem(newName, orderItemId);
+        }
+    }
 });
 
-Template.orderItemMine.events({
-  'click .remove-my-order': function(e) {
-      Orders.remove({_id: this._id});
-  },
+Template.orderItemDetailEditRow.events( {
+    'click .order-item-edit-remove': function(e) {
+        /*this: orderDetail { orderId, userId, guestId, user, guest } */
+        Orders.remove({_id: this.orderId});
+    },
+    'click #order-detail-label': function(e, template) {
+        if (Template.orderItemDetailEditRow.isUserOwnerOfOrderItemDetail(this)) {
+            Session.set('editingOrderId', this.orderId);
+            Deps.flush();
+            var input = template.find('#order-detail-label-edit');
+            input.focus();
+            input.select();
+            console.log('click.order-detail-label(): orderId:' + this.orderId + ',input:' + input);
+        }
+
+    },
+    'focusout #order-detail-label-edit': function(e) {
+        console.log('focusout:' + this.orderId);
+        Session.set('editingOrderId', null);
+    }
+});
+Template.orderItemDetailEditRow.helpers( {
+    isUserOwnerOfOrderItemDetail: function(orderDetail) {
+        /*this: orderDetail { orderId, userId, guestId, user, guest } */
+        var owner = false;
+        if ( Meteor.userId() ) {
+            owner = orderDetail && Meteor.userId() && Meteor.userId() == orderDetail.userId;
+        } else {
+            owner = orderDetail && ClientGlobal.guestId() == orderDetail.guestId;
+        }
+        console.log('isUserOwnerOfOrderItemDetail:' + owner);
+        return owner;
+    },
+    label: function() {
+        //return this.label || this.guest.name;
+        return this.labe || ClientGlobal.userGuestDisplayNameWithDetail(this);
+    },
+    editing: function() {
+        return Session.equals('editingOrderId', this.orderId);
+    }
 });
 
 Template.addMenuRow.events({
@@ -154,12 +210,11 @@ Template.reviewOrderButton.helpers({
 });
 
 Template.reviewOrderButton.events( {
-  'click .review-order': function(e) {
+  'click .save-order': function(e) {
       /* forget what was being edited so it does not affect review page */    
-    Session.set('editingOrderItemId', null);   
-    /* Redirect to review orders page */   
-    Router.go('reviewPage', {_id: this._id});
-  }    
+    Session.set('editingOrderItemId', null);
+    finishOrdersWithTableId(this._id, this.placeId);
+    Router.go('placePage', {_id: this.placeId});  }
 });
 
 Template.removeOrdersButton.events( {

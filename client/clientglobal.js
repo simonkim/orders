@@ -40,26 +40,25 @@ var ordersSumForTableId = function(tableId) {
      * 1. group orders by name -> {name: orders[]}
      * 2. reduce each orders for the same name
      */
-    _.each( groups, function(orders, name, list) {
-      orders[0].users = [];
-      orders[0].guests = [];
-      var sum = _.reduce(orders, function(total, order) {
-        if ( total._id != order._id) {
-          total.qty += order.qty;
-        }
-
-        var user = Meteor.users.findOne({_id: order.userId});
-        if ( user ) {
-          total.users.push(user);
-        } else {
-          var guest = Guests.findOne({_id: order.guestId});
-          if ( guest ) {
-            total.guests.push(guest);
+    _.each( groups, function(group, name, list) {
+        /*
+        group[0].users = [];
+        group[0].guests = [];
+        */
+      group[0].details = []; /* userId, guestId, orderId */
+      var sum = _.reduce(group, function(total, order) {
+          if (total._id != order._id) {
+              /* the first order becomes 'total' and 'qty's of all the other orders are accumulated to total.qty */
+              total.qty += order.qty;
           }
-        }
+          var detail = _.pick(order, 'userId', 'guestId');
+          detail.orderId = order._id;
+          detail.user = Meteor.users.findOne({_id: order.userId});
+          detail.guest = !detail.user && Guests.findOne({_id: order.guestId});
+          total.details.push(detail);
 
-        return total;
-      }, orders[0]);
+          return total;
+      }, group[0]);
       ordersSum.push(sum);
     });
     return ordersSum;
@@ -69,7 +68,7 @@ ClientGlobal = {
      * ClientGlobal.guestId()
      */
     guestId : function() {
-
+        /* FIXME: Make it server method */
         var id = Session.get("guestId");
         if (!id) {
             var name = this.randomReadableString(4);
@@ -180,6 +179,15 @@ ClientGlobal = {
         } 
      },
 
+    userGuestDisplayNameWithDetail: function(orderDetail) {
+        /* detail keys: _id, user, guest, userId, guestId */
+
+        var name = ClientGlobal.userDisplayName(orderDetail.user);
+        if (name == null) {
+            name = orderDetail.guest && orderDetail.guest.name;
+        }
+        return name;
+    }
 };
 
 MapBounds = {
@@ -226,6 +234,7 @@ UI.registerHelper("guestName", function() {
 });
 
 UI.registerHelper("displayName", function() {
+    console.log('displayName()');
     var name = ClientGlobal.userDisplayName(Meteor.user());
     if (name == null || name.length == 0) {
         var guest = ClientGlobal.guestUser();
@@ -236,6 +245,12 @@ UI.registerHelper("displayName", function() {
 
 UI.registerHelper("userGuestDisplayNameWithIds", function(userId, guestId) {
    return ClientGlobal.userGuestDisplayNameWithIds(userId, guestId); 
+});
+
+UI.registerHelper("userGuestDisplayNameWithDetail", function(orderDetail) {
+    /* detail keys: _id, user, guest, userId, guestId */
+
+    return ClientGlobal.userGuestDisplayNameWithDetail(orderDetail);
 });
 
 UI.registerHelper("spinnerRunningMessage", function() {

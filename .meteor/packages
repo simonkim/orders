@@ -7,9 +7,9 @@ standard-app-packages
 insecure
 bootstrap-3
 accounts-base
-accounts-ui
 accounts-password
 iron-router
 persistent-session
 spin
 googlemaps
+accounts-ui

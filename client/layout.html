@@ -18,7 +18,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="{{pathFor 'about'}}">About</a>
+                        <a href="#">About</a>
                     </li>
                 </ul>
             </div>
@@ -63,8 +63,12 @@
 
 <template name="userProfileIcon">
   {{#if currentUser}}
-  <span class="glyphicon glyphicon-user"></span>
+    {{> glyphUser }}
   {{else}}
   <span class="glyphicon glyphicon-globe"></span>
   {{/if}}
+</template>
+
+<template name="glyphUser">
+    <span class="glyphicon glyphicon-user"> </span>
 </template>
