@@ -81,9 +81,15 @@ if (Meteor.isServer) {
     });    
     
     Meteor.methods({
+        /* JSON settings() */
       settings: function () {
           return JSON.parse(Assets.getText('settings.json'));
-      },    
+      },
+        /* var<String> version() */
+      version: function() {
+          var json = JSON.parse(Assets.getText('settings.json'));
+          return json["version"];
+      }
     });    
 }
 
