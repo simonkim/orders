@@ -1,4 +1,7 @@
 /* tables.js */
+Meteor.subscribe("tables");
+Meteor.subscribe("places");
+Meteor.subscribe("guests");
 
 Template.tables.events({
 	'submit form': function(e) {

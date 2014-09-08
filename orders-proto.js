@@ -25,13 +25,6 @@ Menus = new Meteor.Collection("menus");
  * - objectType: place, table, menu, page
  * - objectKey: id (objectType= place, table, or menu), 'home', 'about', '<any unique string>' (objectType: page)
  */
-if (Meteor.isClient) {
-    Meteor.subscribe("orders");
-    Meteor.subscribe("tables");
-    Meteor.subscribe("guests");
-    Meteor.subscribe("comments");
-    Meteor.subscribe("menus");
-}
 
 if (Meteor.isServer) {
 	Meteor.startup(function () {

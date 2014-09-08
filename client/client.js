@@ -1,11 +1,7 @@
 
 /* misc. */
 
-Template.main.greeting = function () {
-  return "Welcome to orders-proto.";
-};
-
-Template.main.events({
+Template.nearby.events({
   'click .label': function (e) {
     /* TODO: click the label -> prepare to enter as the new menu to add */
     console.log( 'clicked label:' + e.target.value);
@@ -13,7 +9,7 @@ Template.main.events({
 
 });
 
-Template.main.helpers({
+Template.nearby.helpers({
 });
 
 /* userProfile */
@@ -42,14 +38,16 @@ function displayNameSetEditMode(editMode) {
     }
 }
 
-Template.userProfile.events({
+Template.userProfileForm.events({
   'submit form': function(e) {
     e.preventDefault();
     var displayName = $(e.target).find('[id=displayName]').val();
     updateDisplayName(displayName);
     displayNameSetEditMode(false);
   },
-  
+});
+Template.userProfile.events({
+
   'click .name-edit': function(e) {
       e.preventDefault();
       displayNameSetEditMode(true);

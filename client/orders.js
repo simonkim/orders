@@ -1,5 +1,11 @@
 /* local APIs */
 
+Meteor.subscribe("orders");
+Meteor.subscribe("menus");
+Meteor.subscribe("guests");
+Meteor.subscribe("comments");
+
+
 var insertOrder = function(menuName, tableId) {
     var order = {
       name: menuName,

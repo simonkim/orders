@@ -1,0 +1,58 @@
+<template name="nearby">
+    <ol class="breadcrumb">
+      <li class="active">Home</li>
+    </ol>       
+
+
+  {{> places}}
+  
+  {{> toolbar}}
+
+  {{> introduction }}
+  
+  {{> commentsForMain}}
+</template>
+
+<template name="introduction">
+
+    <div class="content-section-a">
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-5 col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Recent Updates</h2>
+                    <ul>
+                        <li>Commenting</li>
+                        <li>Adding Menu to Order from Popular Menus</li>
+                        <li>Review and Finish Order</li>
+                        <li>Browse Old Orders</li>
+
+                    </ul>
+                </div>
+                <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+                    <img class="img-responsive" src="img/phones.png" alt="">
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.content-section-a -->
+</template>
+
+<template name="loading">
+    Loading...
+    <!--
+    {{spinnerRunningMessage}}
+    -->
+    {{>spinner}}
+</template>
+
+<template name="commentsForMain">
+    {{> simpleComments commentsMakeParam 'page' 'home'}}    
+</template>
+

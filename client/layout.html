@@ -1,35 +1,64 @@
 <template name="layout">
-  <div class="container">
-  <div id="main" class="row-fluid">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            {{>userProfile }}
-            <h3> <a href="{{pathFor 'main'}}"> SWON </a> <small><span class="glyphicon glyphicon-glass"></span> Shall we order now?</small></h3>
-        </div>
-    </div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
 
-    {{> errors}}
-        
-    {{> yield}}
-  </div>
-  </div>
+                <a class="navbar-brand" href="{{pathFor 'landing'}}"><span class="glyphicon glyphicon-glass"></span>SWON</a>
+
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{{pathFor 'about'}}">About</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+
+        </div>
+        <!-- /.container -->
+    </nav>
+
+
+    <div class="content-section-a">
+
+        <div class="container">
+            <div id="main" class="row-fluid">
+                {{> loginButtons}}
+                {{> userProfileForm}}
+                {{> errors}}
+                {{> yield}}
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
 </template>
 
 
-<template name="userProfile">
-      {{> loginButtons}}
+<template name="userProfileForm">
       <form class="form-inline pull-right" role="form">
-    <!--div class="form-group "-->
-        
-      <label for="displayName">
-          {{>userProfileIcon}}
-      </label>
-      <a href="#" class="name-edit">{{displayName}} <span class="glyphicon glyphicon-edit"></span></a> 
-      <input type="text" class="form-inline name-input hidden" id="displayName" placeholder="Your name" value="{{displayName}}">
-      <a href="#" class="name-ok hidden"><span class="glyphicon glyphicon-ok"></span></a> 
-      <!--button type="submit" class="form-inline btn btn-sm btn-default">Change</button-->
-    <!--/div-->
+        {{> userProfile }}
       </form>
+</template>
+
+<template name="userProfile">
+        <label for="displayName">
+            {{>userProfileIcon}}
+        </label>
+        <a href="#" class="name-edit">{{displayName}} <span class="glyphicon glyphicon-edit"></span></a>
+        <input type="text" class="form-inline name-input hidden" id="displayName" placeholder="Your name" value="{{displayName}}">
+        <a href="#" class="name-ok hidden"><span class="glyphicon glyphicon-ok"></span></a>
 </template>
 
 <template name="userProfileIcon">

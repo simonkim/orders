@@ -1,3 +1,7 @@
+Meteor.subscribe("orders");
+Meteor.subscribe("menus");
+Meteor.subscribe("guests");
+
 var menuAddCountOrInsert = function(menu) {
     var m = Menus.findOne({name:menu.name, placeId:menu.placeId});
     if (m) {
