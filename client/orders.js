@@ -105,7 +105,10 @@ Template.orders.events( {
 Template.orders.helpers({
    ordersOpen: function() {
        return this.finished !== true;
-   } 
+   },
+    createdDateString: function() {
+        return ClientGlobal.dateStringFromTime(this.created);
+    },
 });
 
 Template.orderItem.helpers({
@@ -209,13 +212,13 @@ Template.orderMainButtons.helpers({
    } 
 });
 
-Template.reviewOrderButton.helpers({
+Template.saveOrderButton.helpers({
   orders: function(tableId) {
     return ClientGlobal.ordersSumForTableId(tableId);
   },
 });
 
-Template.reviewOrderButton.events( {
+Template.saveOrderButton.events( {
   'click .save-order': function(e) {
       /* forget what was being edited so it does not affect review page */
     Session.set('editingOrderItemId', null);

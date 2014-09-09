@@ -1,6 +1,6 @@
 <template name="orders">
     <div id="orders" class="row-fluid">
-          <h4> Order </h4>
+          <h4> Order <small> {{createdDateString}}</small></h4>
           {{> ordersAll}}
 
           {{#if ordersOpen}}
@@ -161,14 +161,12 @@
 
 
 <template name="orderMainButtons">
-  {{#if userCanReviewOrderTableId _id}}
+  {{#if userCanFinishOrderTableId _id}}
     <div class="list-group-item list-group-item-default">
         <div class="btn-group btn-group-justified">
           {{#if ordersOpen}}
               {{> removeOrdersButton}}
-              {{#if userCanFinishOrderTableId _id}}
-                {{> reviewOrderButton}}
-              {{/if}}
+              {{> saveOrderButton}}
           {{else}}
               {{> removeOrdersButton}}
           {{/if}}
@@ -177,7 +175,7 @@
   {{/if}}         
 </template>
 
-<template name="reviewOrderButton">
+<template name="saveOrderButton">
     {{#if orders _id}}
     <a role="button" class="btn btn-success save-order">
         <span class="glyphicon glyphicon-ok"> </span>

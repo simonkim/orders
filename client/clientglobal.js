@@ -68,9 +68,12 @@ var ordersSumForTableId = function(tableId) {
     return ordersSum;
 };
 ClientGlobal = {
-    /* Usage:
-     * ClientGlobal.guestId()
-     */
+    /* Order table expires in 2 hours so anybody can delete or save */
+    TIME_ORDERTABLE_EXPIRES_MS : (2 * 3600 * 1000),
+
+/* Usage:
+ * ClientGlobal.guestId()
+ */
     guestId : function() {
         /* FIXME: Make it server method */
         var id = Session.get("guestId");
@@ -126,14 +129,22 @@ ClientGlobal = {
         }
         return name;
     },
+    userCanRemoveTable: function(table) {
+        var canRemove = table && table.creatorId && table.creatorId == Meteor.userId();
+        if ( !canRemove ) {
+            canRemove = table && table.guestId && table.guestId == ClientGlobal.guestId();
+        }
+        return canRemove;
+    },
     userCanFinishOrderTableId: function(tableId) {
         var table = Tables.findOne({_id: tableId});
     
-        var canRemove = table && table.creatorId && table.creatorId == Meteor.userId();
-        if ( !canRemove ) {
-          canRemove = table && table.guestId && table.guestId == ClientGlobal.guestId();
+        var canFinish = this.userCanRemoveTable(table);
+        if ( !canFinish ) {
+            var now = new Date().getTime();
+            canFinish = table && table.created < (now - this.TIME_ORDERTABLE_EXPIRES_MS);
         }
-        return canRemove;
+        return canFinish;
     },
     tableOwnerName : function(tableId) {
 
@@ -268,11 +279,7 @@ UI.registerHelper("spinnerRunningMessage", function() {
 UI.registerHelper("userCanRemoveTableId", function(tableId) {
     var table = Tables.findOne({_id: tableId});
 
-    var canRemove = table && Meteor.userId() !== null && table.creatorId == Meteor.userId();
-    if ( !canRemove ) {
-      canRemove = table && table.guestId == ClientGlobal.guestId();
-    }
-    return canRemove;
+    return ClientGlobal.userCanRemoveTable(table);
 });
 
 UI.registerHelper("orderTotalQty", function(tableId) {
@@ -300,21 +307,6 @@ UI.registerHelper("orderTotalCost", function(tableId) {
           cost += order.price;
       });
       return cost;
-});
-UI.registerHelper("userCanReviewOrderTableId", function(tableId) {
-    /*
-     * canFinishOrder or
-     * user has placed an order
-     */
-    var canReview = ClientGlobal.userCanFinishOrderTableId(tableId);
-    if ( !canReview ) {
-        if ( Meteor.userId()) {
-            canReview = Orders.find({tableId: tableId, userId:Meteor.userId()}).count() > 0;
-        } else {
-            canReview = Orders.find({tableId: tableId, guestId:ClientGlobal.guestId()}).count() > 0;
-        }
-    }
-    return canReview;
 });
 
 UI.registerHelper("userCanFinishOrderTableId", function(tableId) {
