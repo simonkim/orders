@@ -83,5 +83,26 @@ Template.breadCrumbTable.helpers( {
             return place && place.name;
 	    }
 	    return [];
-	}
+	},
+    editing: function() {
+        return Session.equals('editingTableId', this._id);
+    }
+});
+
+Template.breadCrumbTable.events( {
+    'click .table-name': function(e, template) {
+        Session.set('editingTableId', this._id);
+        Deps.flush();
+        var input = template.find('#table-name-edit');
+        input.focus();
+        input.select();
+    },
+    'focusout #table-name-edit': function(e) {
+        Session.set('editingTableId', null);
+        console.log('focusout.table-name-edit, target:' + $(e.target).val());
+        var name = $(e.target).val();
+        if ( name && name.length > 0 ) {
+            Tables.update({_id:this._id}, {$set: {"name": name }});
+        }
+    }
 });
