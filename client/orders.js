@@ -7,17 +7,13 @@ Meteor.subscribe("comments");
 
 
 var insertOrder = function(menuName, tableId) {
-    /* TODO: Make this server method */
-    var order = {
-      name: menuName,
-      qty: 1,
-      price: 0,
-      userId: Meteor.userId(),
-      guestId: ClientGlobal.guestId(),
-      tableId: tableId
-    };
-
-    return Orders.insert(order);      
+    Meteor.call('insertOrder', tableId, menuName, ClientGlobal.guestId(), function(error, result) {
+        if ( error ) {
+            throwError('Can\'t add order: ' + error);
+        } else if ( result ) {
+            console.log('insertOrder:' + result);
+        }
+    });
 };
 
 var menuAddCountOrInsert = function(menu) {

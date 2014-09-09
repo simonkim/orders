@@ -90,7 +90,7 @@ if (Meteor.isServer) {
           var json = JSON.parse(Assets.getText('settings.json'));
           return json["version"];
       }
-    });    
+    });
 }
 
 
