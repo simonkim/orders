@@ -7,6 +7,7 @@ Meteor.subscribe("comments");
 
 
 var insertOrder = function(menuName, tableId) {
+    /* TODO: Make this server method */
     var order = {
       name: menuName,
       qty: 1,
@@ -96,10 +97,12 @@ Template.orders.events( {
   },
   
   'click .order-item-metoo': function(e) {
-        console.log( "me too:" + this.name);
-        insertOrder(this.name, this.tableId); 
+        insertOrder(this.name, this.tableId);
   },
 
+    'click .order-item-edit-close': function(e) {
+        Session.set( 'editingOrderItemId', null);
+    }
 });
 
 
@@ -110,27 +113,37 @@ Template.orders.helpers({
 });
 
 Template.orderItem.helpers({
-    userDisplayName: function(user) {
-        var name = ClientGlobal.userDisplayName(user);
-        if ( name === null) {
-          name = "?";
-        }
-        return name;
-    },
-  
     itemEditing: function(orderItemId) {
-        return Session.equals('editingOrderItemId', orderItemId);       
+        var result = Session.equals('editingOrderItemId', orderItemId);
+        return result;
     },
 });
 
 Template.orderItem.events( {
+});
+
+Template.orderItemEditRows.events( {
     'submit form': function(e) {
         e.preventDefault();
-        var input = $("#order-item-name");
-        var newName = input.val();
-        if ( newName && newName.length > 0) {
-            var orderItemId = this._id;
-            ClientGlobal.renameOrderMenuItem(newName, orderItemId);
+        var newName = $("#order-item-name").val();
+        var price = $("#order-item-price").val();
+        var orderItemId = null;
+        if (this.details && this.details.length > 0) {
+            orderItemId = this.details[0].orderId;
+        }
+        if ( orderItemId && newName && newName.length > 0) {
+            ClientGlobal.renameOrderMenuItem(newName, orderItemId, price);
+        }
+    },
+    'focusout #order-item-price': function(e) {
+        var newName = $("#order-item-name").val();
+        var price = $("#order-item-price").val();
+        var orderItemId = null;
+        if (this.details && this.details.length > 0) {
+            orderItemId = this.details[0].orderId;
+        }
+        if ( orderItemId && newName && newName.length > 0) {
+            ClientGlobal.renameOrderMenuItem(newName, orderItemId, price);
         }
     }
 });
@@ -147,12 +160,10 @@ Template.orderItemDetailEditRow.events( {
             var input = template.find('#order-detail-label-edit');
             input.focus();
             input.select();
-            console.log('click.order-detail-label(): orderId:' + this.orderId + ',input:' + input);
         }
-
     },
     'focusout #order-detail-label-edit': function(e) {
-        console.log('focusout:' + this.orderId);
+        /* TODO: Apply the changed label for this order item */
         Session.set('editingOrderId', null);
     }
 });
@@ -165,7 +176,6 @@ Template.orderItemDetailEditRow.helpers( {
         } else {
             owner = orderDetail && ClientGlobal.guestId() == orderDetail.guestId;
         }
-        console.log('isUserOwnerOfOrderItemDetail:' + owner);
         return owner;
     },
     label: function() {
@@ -211,7 +221,7 @@ Template.reviewOrderButton.helpers({
 
 Template.reviewOrderButton.events( {
   'click .save-order': function(e) {
-      /* forget what was being edited so it does not affect review page */    
+      /* forget what was being edited so it does not affect review page */
     Session.set('editingOrderItemId', null);
     finishOrdersWithTableId(this._id, this.placeId);
     Router.go('placePage', {_id: this.placeId});  }
@@ -226,11 +236,7 @@ Template.removeOrdersButton.events( {
 
 Template.popularMenus.events( {
     'click .popular-menu-item': function(e, template) {
-        console.log( "popular-menu-item:" + this.name);
-        console.log( " popular-menu-item:" + JSON.stringify(template.data));
-        var id = insertOrder(this.name, template.data._id); 
-        
-        console.log( 'orderId:' + id);      
+        var id = insertOrder(this.name, template.data._id);
     },
     'click .show-popular-menus': function(e) {
         Session.set('tableIdViewingPopularOrders', this._id);
@@ -241,8 +247,6 @@ Template.popularMenus.events( {
 });
 Template.popularMenus.helpers( {
     popularMenus: function() {
-        console.log('popularMenus(): this:' + JSON.stringify(this));
-        console.log("popularMenus(): placeId:" + this.placeId + ' this.name:' + this.name);
         return this && this.placeId && Menus.find({placeId: this.placeId}, {sort: {count: -1}});
     },
     

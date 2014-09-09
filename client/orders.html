@@ -16,10 +16,11 @@
         {{#each orders _id}}
           {{> orderItem}}
         {{/each}}
-        <div class="list-group-item list-group-item-info order-item">
+        <div class="list-group-item list-group-item-warning order-item">
+            <span class="glyphicon glyphicon-info-sign"> </span>
             Total
-            <span class="badge pull-right"> {{orderTotalQty this._id}} </span>
-            
+            <!-- FIXME: Optimize getting total price and qty efficiency -->
+            <span class="badge"> W {{orderTotalPrice this._id}} / {{orderTotalQty this._id}}  </span>
         </div>
         
     {{else}}
@@ -34,7 +35,7 @@
     {{/if}}
 
     <!-- who's host? -->
-    <div class="list-group-item list-group-item-warning order-item">
+    <div class="list-group-item list-group-item-info order-item">
         Host - {{> glyphUser }} {{userGuestDisplayNameWithIds this.creatorId this.guestId}}
     </div>
         
@@ -44,58 +45,85 @@
 
 
 <template name="orderItem">
-      <a href="#" class="list-group-item list-group-item-default order-item">
-          <div>
-              
-        <span class="glyphicon glyphicon-glass"> </span>
-        <a href="#" class="menu-name">{{name}}</a>
-        <span class="glyphicon glyphicon-tag"> </span>
-        {{price}}
-        <span class="badge pull-right"> {{qty}} </span>
-          </div>
-        <div>
-        {{> glyphUser }}
-            {{#each this.details}}
-                {{userGuestDisplayNameWithDetail this}}
-            {{/each}}
-        </div>
-        
-      </a>
 
     {{#if itemEditing this._id}}
-        <div class="list-group-item list-group-item-default order-item-edit">
-            <!--input type="text" id="order-item-name" value="{{this.name}}" placeholder="Menu"-->
-            <form role="form" id="menu-rename" class="form-inline">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-glass"> </span>
-                    </span>
-                    <input type="text" class="form-control" id="order-item-name" placeholder="Menu" value="{{this.name}}">
-                    <span class="input-group-btn">
-                        <button type="submit" class="btn btn-default btn-primary"><span class="glyphicon glyphicon-ok"> </span></button>
-                    </span>
-
-                    <span class="input-group-btn">
-                        <button type="button" class="btn btn-default order-item-metoo">
-                            <span class="glyphicon glyphicon-plus"> </span>
-                        </button>
-                    </span>
-                </div>
-                <!-- /input-group -->
-            </form>
-        </div>
-        {{#each details}}
-            {{> orderItemDetailEditRow}}
-        {{/each}}
-
+        {{> orderItemEditRows}}
+    {{else}}
+        {{> orderItemSummaryRow}}
     {{/if}}
  </template>
 
-<template name="orderItemDetailEditRow">
-    <div class="list-group-item list-group-item-default order-item-edit">
-        <!-- menu -->
-        <span class="glyphicon glyphicon-glass"> </span>{{../name}}
+<template name="orderItemSummaryRow">
+    <a href="#" class="list-group-item list-group-item-default order-item">
+        <span class="badge"> W {{totalPrice}} / {{qty}} </span>
+        <div>
+            <span class="glyphicon glyphicon-glass"> </span>
+            <a href="#" class="menu-name">{{name}}</a>
+        </div>
+        <div>
+            {{> glyphUser }}
+            {{#each this.details}}
+            {{userGuestDisplayNameWithDetail this}}
+            {{/each}}
+        </div>
+    </a>
+</template>
 
+<template name="orderItemEditRows">
+    <!-- subtotal -->
+    <div class="list-group-item list-group-item-default order-item">
+        <span class="glyphicon glyphicon-info-sign"> </span>
+        {{name}} - Subtotal:
+        <span class="badge"> W {{totalPrice}} / {{qty}} </span>
+    </div>
+
+    <!-- main row with menu name edit -->
+    <div class="list-group-item list-group-item-info order-item-edit">
+        <!-- close button -->
+        <button type="button" class="close order-item-edit-close">
+            &nbsp; &times;
+        </button>
+
+        <!--input type="text" id="order-item-name" value="{{this.name}}" placeholder="Menu"-->
+        <form role="form" id="menu-rename" class="form-inline">
+            <div class="input-group">
+                <!-- menu name -->
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-glass"> </span>
+                </span>
+
+                <input type="text" class="form-control" id="order-item-name" placeholder="Menu" value="{{this.name}}">
+
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default btn-default order-item-metoo">
+                        <span class="glyphicon glyphicon-plus"> </span>
+                    </button>
+                    <button type="submit" class="btn btn-default btn-primary">
+                        <span class="glyphicon glyphicon-ok"> </span>
+                    </button>
+                </span>
+            </div>
+            <!-- /input-group -->
+            <div class="input-group">
+                <!-- menu price -->
+                <span class="input-group-addon">
+                    W
+                </span>
+
+                <input type="number" min="0.00" step="100" class="form-control" id="order-item-price" placeholder="Price" value="{{this.price}}">
+            </div>
+            <!-- /input-group -->
+        </form>
+    </div>
+
+    <!-- each individual order -->
+    {{#each details}}
+    {{> orderItemDetailEditRow}}
+    {{/each}}
+</template>
+
+<template name="orderItemDetailEditRow">
+    <div class="list-group-item list-group-item-info order-item-edit">
         <!-- whose order -->
         {{> glyphUser }}
         {{#if editing}}
@@ -108,7 +136,7 @@
 
         {{#if isUserOwnerOfOrderItemDetail this}}
         <button class="btn btn-danger btn-sm order-item-edit-remove pull-right">
-            <span class="glyphicon glyphicon-remove"> </span>
+            <span class="glyphicon glyphicon-minus"> </span>
         </button>
         {{/if}}
     </div>

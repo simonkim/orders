@@ -29,13 +29,14 @@ var genReadableString = function(length) {
 };
 
 var ordersSumForTableId = function(tableId) {
+    /* TODO: Make this server method */
     /* name, price, qty, userId[] */
     var orders = Orders.find( {tableId: tableId}, {sort: {name: 1}} ).fetch();
     var groups = _.groupBy( orders, function(order) {
         return order.name;
     });
     var ordersSum = [];
-
+    var sumId = 0;
     /*
      * 1. group orders by name -> {name: orders[]}
      * 2. reduce each orders for the same name
@@ -46,10 +47,12 @@ var ordersSumForTableId = function(tableId) {
         group[0].guests = [];
         */
       group[0].details = []; /* userId, guestId, orderId */
+      group[0].totalPrice = parseFloat(group[0].price);
       var sum = _.reduce(group, function(total, order) {
           if (total._id != order._id) {
               /* the first order becomes 'total' and 'qty's of all the other orders are accumulated to total.qty */
               total.qty += order.qty;
+              total.totalPrice = parseFloat(total.totalPrice) + parseFloat(order.price);
           }
           var detail = _.pick(order, 'userId', 'guestId');
           detail.orderId = order._id;
@@ -59,6 +62,7 @@ var ordersSumForTableId = function(tableId) {
 
           return total;
       }, group[0]);
+      sum._id = sumId++;
       ordersSum.push(sum);
     });
     return ordersSum;
@@ -152,28 +156,33 @@ ClientGlobal = {
         return date.toLocaleDateString();
     },
     
-    renameOrderMenuItem: function(newName, orderItemId) {
-        
-        console.log("changed menu name:" + newName + ", orderItemId:" + orderItemId);
-        Session.set('editingOrderItemId', null);
+    renameOrderMenuItem: function(newName, orderItemId, price) {
+        /* TODO: Make this server method */
+        console.log("changed menu name:" + newName + ", orderItemId:" + orderItemId + ", price:" + price);
+        if ( !(price === 0 || price > 0) ) {
+            price = 0;
+        } else {
+            price = parseFloat(price);
+        }
+
         var order = Orders.findOne({_id: orderItemId});
         if ( order ) {
             var orders = Orders.find({name:order.name, tableId:order.tableId}).fetch();
             for(var i = 0; i < orders.length; i++) {
-                Orders.update({_id:orders[i]._id}, {$set:{"name": newName}});
+                Orders.update({_id:orders[i]._id}, {$set:{"name": newName, "price": price}});
             }
             
             var table = Tables.findOne({_id: order.tableId});
             var menuOldName = table && table.placeId && Menus.findOne({placeId: table.placeId, name:order.name});
             if ( menuOldName ) {
                 var menuNewName = table && table.placeId && Menus.findOne({placeId: table.placeId, name:newName});
-                if ( menuNewName ) {
-                    console.log( 'rename menu: update and remove merge:' + newName);
-                    Menus.update({_id:menuNewName._id}, {$inc: {"count": menuOldName.count}});
+                if ( menuNewName  && menuNewName._id != menuOldName._id) {
+                    console.log( 'rename menu: update and remove merge:' + newName + ', menuNewName:' + JSON.stringify(menuNewName));
+                    Menus.update({_id:menuNewName._id}, {$inc: {"count": menuOldName.count}, $set: {"price": price}});
                     Menus.remove({_id:menuOldName._id});
                 } else {
                     console.log( 'rename menu: simple rename:' + newName);
-                    Menus.update({_id:menuOldName._id}, {$set: {"name": newName}});
+                    Menus.update({_id:menuOldName._id}, {$set: {"name": newName, "price": price}});
                 }
             }
         } 
@@ -234,7 +243,6 @@ UI.registerHelper("guestName", function() {
 });
 
 UI.registerHelper("displayName", function() {
-    console.log('displayName()');
     var name = ClientGlobal.userDisplayName(Meteor.user());
     if (name == null || name.length == 0) {
         var guest = ClientGlobal.guestUser();
@@ -274,6 +282,15 @@ UI.registerHelper("orderTotalQty", function(tableId) {
           qty += order.qty;
       });
       return qty;
+});
+
+UI.registerHelper("orderTotalPrice", function(tableId) {
+    var orders = ClientGlobal.ordersSumForTableId(tableId);
+    var price = 0;
+    _.each( orders, function(order) {
+        price += parseFloat(order.price);
+    });
+    return price;
 });
 
 UI.registerHelper("orderTotalCost", function(tableId) {
